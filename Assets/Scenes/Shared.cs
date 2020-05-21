@@ -60,6 +60,7 @@ public class Shared
     static public float speed = 100;
     public const int deltaAngle = 10;
     static public AngleCoords[] angleArr;
+    static public GameObject[] hitWithBulletObjects;
 
     static Shared()
     {
@@ -73,9 +74,11 @@ public class Shared
         int angleArrArrIndex = 0;
         for (var i = -90; i <= 90; i += Shared.deltaAngle)
         {
-            Shared.angleArr[angleArrArrIndex] = CalcForAngle(i);
-            angleArrArrIndex++;
+            //Shared.angleArr[angleArrArrIndex] = CalcForAngle(i);
+            //angleArrArrIndex++;
         }
+
+        hitWithBulletObjects = GameObject.FindGameObjectsWithTag("hitWithBullet");
     }
 
     static public Vector3 CalculateAim(GameObject target, Vector3 selfPosition, float selfSpeed)
@@ -251,6 +254,29 @@ public class Shared
             yCoord += ySpeed * Time.fixedDeltaTime;
         }
         return res;
+    }
+
+    /// <summary>
+    /// Find some projected angle measure off some forward around some axis.
+    /// </summary>
+    /// <param name="v"></param>
+    /// <param name="forward"></param>
+    /// <param name="axis"></param>
+    /// <returns>Angle in degrees</returns>
+    public static float AngleOffAroundAxis(Vector3 v, Vector3 forward, Vector3 axis, bool clockwise = false)
+    {
+        Vector3 right;
+        if (clockwise)
+        {
+            right = Vector3.Cross(forward, axis);
+            forward = Vector3.Cross(axis, right);
+        }
+        else
+        {
+            right = Vector3.Cross(axis, forward);
+            forward = Vector3.Cross(right, axis);
+        }
+        return Mathf.Atan2(Vector3.Dot(v, right), Vector3.Dot(v, forward)) * Mathf.Rad2Deg;
     }
 }
 

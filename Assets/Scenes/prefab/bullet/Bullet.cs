@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour
     public GameObject target;
     public Vector3 speed;
     public float speedMagnitude;
+
     void Start()
     {
         target = GameObject.FindGameObjectWithTag("TargetTag");

@@ -45,10 +45,10 @@ public class CameraOperate : MonoBehaviour
     public GameObject target;
     public bool attachToTarget = false;
 
-    public GameObject physicsRocket;
-    public bool attachToPhysicsRocket = false;
-    public bool lookAtPhysicsRocketForward = true;
-    public bool physicsRocketUseOffset = true;
+    public GameObject controlObject;
+    public bool attachToControlObject = false;
+    public bool lookAtControlObjectForward = true;
+    public bool controlObjectOffset = true;
 
     public GameObject antiAircraft;
     public bool attachToAntiAircraft = true;
@@ -213,19 +213,19 @@ public class CameraOperate : MonoBehaviour
                 {
                        m_transform.position = target.transform.position + offsetPosition;
                 }
-                else if (attachToPhysicsRocket == true)
+                else if (attachToControlObject == true)
                 {
-                    if (physicsRocketUseOffset)
+                    if (controlObjectOffset)
                     {
-                        m_transform.position = physicsRocket.transform.position + offsetPosition;
+                        m_transform.position = controlObject.transform.position + offsetPosition;
                     } else
                     {
                         //m_transform.position = physicsRocket.transform.position + new Vector3(0, 1, -8);
-                        m_transform.position = physicsRocket.transform.position - physicsRocket.transform.forward * 8 + Vector3.up * 3;
+                        m_transform.position = controlObject.transform.position - controlObject.transform.forward * 25 + Vector3.up * 6;
                     }
-                    if (lookAtPhysicsRocketForward)
+                    if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
                     {
-                        m_transform.LookAt(physicsRocket.transform.forward * 1000000);
+                        m_transform.LookAt(controlObject.transform.forward * 1000000);
                     }
                 }
                 else if (attachToAntiAircraft == true)
