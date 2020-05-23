@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Runtime.InteropServices;
-using CodeMonkey.Utils;
 
 public class controlObject : MonoBehaviour
 {
@@ -29,6 +27,8 @@ public class controlObject : MonoBehaviour
     float timePressUp = 0;
     float timePressDown = 0;
 
+    GameObject target;
+
 
     // public
     public float distForAddControlPlaneForce;
@@ -38,6 +38,8 @@ public class controlObject : MonoBehaviour
     public Bullet2 bullet;
     public Vector3 angularVelocity;
     public Vector3 actualAcceleration;
+
+    public LineRenderer lineRenderer;
 
     public Camera UICam;
 
@@ -52,6 +54,7 @@ public class controlObject : MonoBehaviour
 
     public RectTransform rectTransformDirectionCircle;
     public RectTransform rectTransformDirectionCircleArrow;
+    public RectTransform rectTransformEnemyArrow;
 
     public Text speedTextLabel;
     public Text powerTextLabel;
@@ -88,6 +91,8 @@ public class controlObject : MonoBehaviour
     public float angularDragCoeff;
     public float controlPlaneDragEngineWindCoeff;
 
+    Mesh mesh;
+
     void Start()
     {
         //Cursor.lockState = CursorLockMode.Locked;
@@ -99,13 +104,17 @@ public class controlObject : MonoBehaviour
         rectTransformDirectionCircle.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
         rb = GetComponent<Rigidbody>();
-        rb.velocity = new Vector3(0, 0, 155);
+        rb.velocity = new Vector3(0, 0, 55);
         rb.maxAngularVelocity = 20;
         rb.inertiaTensor = tensor1 * rb.mass;
 
         directionCircleInWorldWorldPosition = transform.position + transform.forward * aimDistist;
 
         Cursor.visible = false;
+
+        lineRenderer.positionCount = 2;
+
+        //mesh = GetComponent<MeshFilter>().mesh;
     }
 
     void FixedUpdate()
@@ -113,6 +122,9 @@ public class controlObject : MonoBehaviour
         rb.inertiaTensor = tensor1 * rb.mass;
 
         handleKeyInput();
+
+        shoot();
+        showAimPoint();
 
         velocity = rb.velocity;
         velocityMaggnitude = rb.velocity.magnitude;
@@ -132,8 +144,6 @@ public class controlObject : MonoBehaviour
         calcAcceleration();
         calcAttackAngles();
 
-        shoot();
-
         angularVelocity = rb.angularVelocity;
         rb.angularDrag = angularDragCoeff * rb.velocity.magnitude + 1f;
     }
@@ -149,6 +159,7 @@ public class controlObject : MonoBehaviour
     void LateUpdate() // late updat - not late fixed update
     {
         setAimAndDirectionCirclePosition();
+        drawArrows();
 
         if (speedTextLabel)
             speedTextLabel.text = "velocity: " + (velocity.magnitude * 3.6).ToString("0.0") + " km/h";
@@ -170,6 +181,8 @@ public class controlObject : MonoBehaviour
         renderVelocityGizmos();
 
         //Gizmos.DrawRay(transform.position - transform.forward * distForAddControlPlaneForce, transform.up);
+
+        //Bounds bounds = mesh.bounds;
     }
 
     void setAimAndDirectionCirclePosition()
@@ -188,18 +201,18 @@ public class controlObject : MonoBehaviour
         Vector3 aimPosition = cam.WorldToScreenPoint(aimInWorldSpacPosition);
         aimPosition.z = 0;
         aim.position = aimPosition;
+    }
 
+    void drawArrows()
+    {
         drawArrowIfObjectOutsideScreens(directionCircleInWorldWorldPosition, rectTransformDirectionCircleArrow);
+
+        if (target) 
+            drawArrowIfObjectOutsideScreens(target.transform.position, rectTransformEnemyArrow);
     }
 
     void drawArrowIfObjectOutsideScreens(Vector3 targetPosition, RectTransform pointerRectTransform)
     {
-        Vector3 fromPosition = /*transform.position;*/ cam.transform.position;
-        fromPosition.z = 0;
-        Vector3 dir = (targetPosition - fromPosition).normalized;
-        float angle = UtilsClass.GetAngleFromVectorFloat(dir);
-        pointerRectTransform.localEulerAngles = new Vector3(0, 0, angle);
-
         float borderSize = 50f;
         Vector3 tragetPositionScreenPoint = cam.WorldToScreenPoint(targetPosition);
         bool isOffsetScreen = tragetPositionScreenPoint.x <= borderSize || tragetPositionScreenPoint.x >= Screen.width - borderSize || tragetPositionScreenPoint.y <= borderSize || tragetPositionScreenPoint.y >= Screen.height - borderSize;
@@ -215,6 +228,10 @@ public class controlObject : MonoBehaviour
             Vector3 pointerWorldPosition = UICam.ScreenToWorldPoint(cappedTargetScreenPosition);
             pointerRectTransform.position = pointerWorldPosition;
             pointerRectTransform.localPosition = new Vector3(pointerRectTransform.localPosition.x, pointerRectTransform.localPosition.y, 0f);
+
+            Vector2 arrowPosInScreen = pointerRectTransform.localPosition;
+            float angle = Vector2.SignedAngle(Vector2.right, arrowPosInScreen);
+            pointerRectTransform.localEulerAngles = new Vector3(0, 0, angle);
         }
         else
         {
@@ -227,9 +244,30 @@ public class controlObject : MonoBehaviour
     {
         if (Input.GetMouseButton(0)) // GetMouseButton GetMouseButtonDown
         {
-            Bullet2 bulletClone = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * 15, transform.rotation);
+            Bullet2 bulletClone = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * 1, transform.rotation);
             bulletClone.speed = bulletClone.initBulletSpeed * new Vector3(transform.forward.x, transform.forward.y, transform.forward.z) + rb.velocity;
+            bulletClone.owner = gameObject;
         }
+    }
+
+    void showAimPoint()
+    {
+        //foreach (GameObject hitWithBulletObject in Shared.hitWithBulletObjects)
+        //{
+        //    if (gameObject != hitWithBulletObject)
+        //    {
+        //        target = hitWithBulletObject;
+        //        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<Rigidbody>().velocity, transform.position, bullet.initBulletSpeed, rb.velocity);
+        //        lineRenderer.SetPosition(0, target.transform.position);
+        //        lineRenderer.SetPosition(1, aimPosition);
+        //        return;
+        //    }
+        //}
+
+        target = GameObject.FindGameObjectWithTag("TargetTag");
+        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<target>().calculatedSpeed, transform.position, bullet.initBulletSpeed, rb.velocity);
+        lineRenderer.SetPosition(0, target.transform.position);
+        lineRenderer.SetPosition(1, aimPosition);
     }
 
     void calcAttackAngles()

@@ -11,17 +11,26 @@ public class Bullet2 : MonoBehaviour
     public float initBulletSpeed = 1150.0f;
     public float distWhenBulletHitTarget = 5f;
     public int iterationCt = 4;
+    public GameObject owner;
 
     void Start()
     {
         //target = GameObject.FindGameObjectWithTag("TargetTag");
+        step();
     }
 
     void FixedUpdate()
     {
+        step();
+    }
+
+    void step()
+    {
         i++;
         foreach (GameObject hitWithBulletObject in Shared.hitWithBulletObjects)
         {
+            if (hitWithBulletObject == owner) continue;
+
             if ((transform.position - hitWithBulletObject.transform.position).magnitude < initBulletSpeed * Time.deltaTime)
             {
                 for (var j = 0; j < iterationCt; j++)

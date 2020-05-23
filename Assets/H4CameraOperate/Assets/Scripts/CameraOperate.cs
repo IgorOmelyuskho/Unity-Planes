@@ -221,7 +221,7 @@ public class CameraOperate : MonoBehaviour
                     } else
                     {
                         //m_transform.position = physicsRocket.transform.position + new Vector3(0, 1, -8);
-                        m_transform.position = controlObject.transform.position - controlObject.transform.forward * 25 + Vector3.up * 6;
+                        m_transform.position = controlObject.transform.position - controlObject.transform.forward * 15 + Vector3.up * 2;
                     }
                     if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
                     {

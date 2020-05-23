@@ -81,14 +81,16 @@ public class Shared
         hitWithBulletObjects = GameObject.FindGameObjectsWithTag("hitWithBullet");
     }
 
-    static public Vector3 CalculateAim(GameObject target, Vector3 selfPosition, float selfSpeed)
+    // aim without gravity and wind drag
+    // selfSpeed - for rocket use Vector3.zero
+    static public Vector3 CalculateAim(Vector3 targetPosition, Vector3 targetSpeed, Vector3 selfPosition, float bulletOrRocketSpeed, Vector3 selfSpeed)
     {
-        Vector3 targetingPosition = target.transform.position;
+        Vector3 targetingPosition = targetPosition;
         for (int i = 0; i < 10; i++)
         {
             float dist = (selfPosition - targetingPosition).magnitude;
-            float timeToTarget = dist / selfSpeed;
-            targetingPosition = target.transform.position + target.GetComponent<target>().calculatedSpeed * timeToTarget;
+            float timeToTarget = dist / bulletOrRocketSpeed;
+            targetingPosition = targetPosition + (targetSpeed - selfSpeed) * timeToTarget;
             if (
                 float.IsNaN(targetingPosition.x) ||
                 float.IsNaN(targetingPosition.y) ||
@@ -98,7 +100,7 @@ public class Shared
                 targetingPosition.z > 5000
                )
             {
-                return target.transform.position;
+                return targetPosition;
             }
         }
 

@@ -63,7 +63,7 @@ public class Rocket3 : MonoBehaviour
         {
             prevRotation = transform.rotation;
             Vector3 selfDirection = transform.forward;
-            preemptivePosition = Shared.CalculateAim(target, transform.position, currentSpeed);
+            preemptivePosition = Shared.CalculateAim(target.transform.position, target.GetComponent<target>().speed, transform.position, currentSpeed, Vector3.zero);
             directionToPreemptive = (preemptivePosition - transform.position).normalized;
             angleBetween = Vector3.Angle(selfDirection, directionToPreemptive);
 

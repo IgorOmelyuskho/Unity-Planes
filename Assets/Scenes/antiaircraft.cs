@@ -13,7 +13,7 @@ public class antiaircraft : MonoBehaviour
     public bool lookOnCameraFwd = false;
     public float initBulletSpeed = 500.0f;
     public Vector3 fwd;
-
+    public Vector3 speed = new Vector3(0, 0, 5);
 
     void Start()
     {
@@ -26,7 +26,7 @@ public class antiaircraft : MonoBehaviour
         i++;
         if (target)
         {
-            aimPosition = Shared.CalculateAim(target, transform.position, initBulletSpeed);
+            aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<target>().speed, transform.position, initBulletSpeed, speed);
         }
 
         if (lookOnCameraFwd == true)
@@ -43,7 +43,7 @@ public class antiaircraft : MonoBehaviour
         if (Input.GetMouseButton(0)) // GetMouseButton GetMouseButtonDown
         {
             Bullet bulletClone = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, transform.position.z), transform.rotation);
-            bulletClone.speed = initBulletSpeed * new Vector3(fwd.x, fwd.y, fwd.z);
+            bulletClone.speed = initBulletSpeed * new Vector3(fwd.x, fwd.y, fwd.z) + speed;
             //bulletClone.speed = initBulletSpeed * new Vector3(0, 0, 0);
         }
 /*        if (i % 30 == 0)
@@ -52,6 +52,7 @@ public class antiaircraft : MonoBehaviour
             bulletClone.speed = initBulletSpeed * transform.forward;
         }*/
 
+        transform.position += Time.fixedDeltaTime * speed;
         lineRendererMethod();
     }
 

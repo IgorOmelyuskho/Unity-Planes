@@ -35,7 +35,6 @@ public class target : MonoBehaviour
 
     void OnMouseDown() /*under object*/
     {
-        Debug.Log("OnMouseDown");
     }
 
     void Move()
