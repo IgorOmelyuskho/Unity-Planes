@@ -3,41 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.InteropServices;
+using CodeMonkey.Utils;
 
 public class controlObject : MonoBehaviour
 {
-    [DllImport("user32.dll")]
-    static extern bool SetCursorPos(int X, int Y);
-
     Camera cam;
-
-    public Rigidbody rb;
-
+    float mouseSensitivity = 23;
     RectTransform aim;
-
     Vector3 prevVelocity;
-    public Vector3 velocity;
-    public float velocityMaggnitude;
-
-    public Bullet2 bullet;
-
-    public Vector3 angularVelocity;
-
-    public Vector3 actualAcceleration;
-
     float attackAngle;
 
-    public float distForAddControlPlaneForce;
-    public float distForAddAileronForce;
-    public Vector3 tensor1;
-
-    [Range(0.0f, 100f)] public float power = 0;
-    public float engineThrust = 0;
-
-    public Text speedTextLabel;
-    public Text powerTextLabel;
-    public Text accelerationTextLabel;
-    public Text attackAngleTextLabel;
+    float aimDistist = 10000;
+    Vector3 aimInWorldSpacPosition;
+    Vector3 directionCircleInWorldWorldPosition;
 
     bool moveLeft;
     bool moveRight;
@@ -45,6 +23,40 @@ public class controlObject : MonoBehaviour
     bool moveDown;
     bool leftRoll;
     bool rightRoll;
+
+    float timePressLeft = 0;
+    float timePressRight = 0;
+    float timePressUp = 0;
+    float timePressDown = 0;
+
+
+    // public
+    public float distForAddControlPlaneForce;
+    public float distForAddAileronForce;
+    public Vector3 tensor1;
+    public Rigidbody rb;
+    public Bullet2 bullet;
+    public Vector3 angularVelocity;
+    public Vector3 actualAcceleration;
+
+    public Camera UICam;
+
+    public Vector3 velocity;
+    public float velocityMaggnitude;
+
+    [Range(0.0f, 100f)] public float power = 0;
+    public float engineThrust = 0;
+
+    public float xAngleBetweenAinAndDirectionCircle;
+    public float yAngleBetweenAinAndDirectionCircle;
+
+    public RectTransform rectTransformDirectionCircle;
+    public RectTransform rectTransformDirectionCircleArrow;
+
+    public Text speedTextLabel;
+    public Text powerTextLabel;
+    public Text accelerationTextLabel;
+    public Text attackAngleTextLabel;
 
     public Vector3 left_right_angle;
     public Vector3 left_right_attack_angle;
@@ -59,10 +71,8 @@ public class controlObject : MonoBehaviour
     public GameObject leftAileron;
     public GameObject rightAileron;
 
-    float timePressLeft = 0;
-    float timePressRight = 0;
-    float timePressUp = 0;
-    float timePressDown = 0;
+    public float upDownAngleCoeff = 1f;
+    public float leftRightAngleCoeff = 1f;
 
     public float engineThrustCoeff;
     public float engineThrustKG;
@@ -78,28 +88,15 @@ public class controlObject : MonoBehaviour
     public float angularDragCoeff;
     public float controlPlaneDragEngineWindCoeff;
 
-    public float xAngleBetweenAinAndDirectionCircle;
-    public float yAngleBetweenAinAndDirectionCircle;
-
-    public GameObject directionCircle;
-    RectTransform rectTransformDirectionCircle;
-
-    float aimDistist = 10000;
-    Vector3 aimInWorldSpacPosition;
-    Vector3 directionCircleInWorldWorldPosition;
-
-    public Vector3 lastMouseCoordinate = Vector3.zero;
-    public Vector3 mouseDelta;
-
-    float upDownAngleCoeff = 1f;
-    float leftRightAngleCoeff = 1f;
-
-    // Start is called before the first frame update
     void Start()
     {
+        //Cursor.lockState = CursorLockMode.Locked;
+
         cam = Camera.main;
+
         aim = GameObject.Find("direction_where_look_control_object").GetComponent<RectTransform>();
-        rectTransformDirectionCircle = directionCircle.GetComponent<RectTransform>();
+
+        rectTransformDirectionCircle.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
         rb = GetComponent<Rigidbody>();
         rb.velocity = new Vector3(0, 0, 155);
@@ -108,7 +105,7 @@ public class controlObject : MonoBehaviour
 
         directionCircleInWorldWorldPosition = transform.position + transform.forward * aimDistist;
 
-        //Cursor.visible = false;
+        Cursor.visible = false;
     }
 
     void FixedUpdate()
@@ -120,8 +117,10 @@ public class controlObject : MonoBehaviour
         velocity = rb.velocity;
         velocityMaggnitude = rb.velocity.magnitude;
 
-        //rotateControlPlaneByKey();
-        rotateControlPlaneByMouse();
+        if (moveLeft || moveRight || moveDown || moveUp)
+            rotateControlPlaneByKey();
+        else
+            rotateControlPlaneByMouse();
 
         addEngineForce();
         addCorpusForces();
@@ -145,12 +144,12 @@ public class controlObject : MonoBehaviour
         //drawEleuronForces();
         //drawCorpusForces();
         //drawWingForces();
-        //Debug.Log(Input.GetAxis("Mouse X") + "1111");
-        setAimAndDirectionCirclePosition();
     }
 
     void LateUpdate() // late updat - not late fixed update
     {
+        setAimAndDirectionCirclePosition();
+
         if (speedTextLabel)
             speedTextLabel.text = "velocity: " + (velocity.magnitude * 3.6).ToString("0.0") + " km/h";
 
@@ -175,19 +174,12 @@ public class controlObject : MonoBehaviour
 
     void setAimAndDirectionCirclePosition()
     {
-        mouseDelta = Input.mousePosition - lastMouseCoordinate;
+        Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
         if (mouseDelta.x != 0 || mouseDelta.y != 0)
         {
-            //Cursor.lockState = CursorLockMode.None;
-            directionCircleInWorldWorldPosition = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, aimDistist));
-            //Vector3 cursorPos = cam.WorldToScreenPoint(directionCircleInWorldWorldPosition);
-            //SetCursorPos(Mathf.RoundToInt(cursorPos.x), Mathf.RoundToInt(cursorPos.y));
-        } else
-        {
-            //Cursor.lockState = CursorLockMode.Locked;
+            directionCircleInWorldWorldPosition = cam.ScreenToWorldPoint(new Vector3(rectTransformDirectionCircle.position.x + mouseDelta.x, rectTransformDirectionCircle.position.y + mouseDelta.y, aimDistist));
         }
 
-        //directionCircleInWorldWorldPosition += (cam.ScreenToWorldPoint(new Vector3(mouseDelta.x, mouseDelta.y, aimDistist)));
         Vector3 directionCirclePosition = cam.WorldToScreenPoint(directionCircleInWorldWorldPosition);
         directionCirclePosition.z = 0;
         rectTransformDirectionCircle.position = directionCirclePosition;
@@ -197,7 +189,38 @@ public class controlObject : MonoBehaviour
         aimPosition.z = 0;
         aim.position = aimPosition;
 
-        lastMouseCoordinate = Input.mousePosition;
+        drawArrowIfObjectOutsideScreens(directionCircleInWorldWorldPosition, rectTransformDirectionCircleArrow);
+    }
+
+    void drawArrowIfObjectOutsideScreens(Vector3 targetPosition, RectTransform pointerRectTransform)
+    {
+        Vector3 fromPosition = /*transform.position;*/ cam.transform.position;
+        fromPosition.z = 0;
+        Vector3 dir = (targetPosition - fromPosition).normalized;
+        float angle = UtilsClass.GetAngleFromVectorFloat(dir);
+        pointerRectTransform.localEulerAngles = new Vector3(0, 0, angle);
+
+        float borderSize = 50f;
+        Vector3 tragetPositionScreenPoint = cam.WorldToScreenPoint(targetPosition);
+        bool isOffsetScreen = tragetPositionScreenPoint.x <= borderSize || tragetPositionScreenPoint.x >= Screen.width - borderSize || tragetPositionScreenPoint.y <= borderSize || tragetPositionScreenPoint.y >= Screen.height - borderSize;
+
+        if (isOffsetScreen)
+        {
+            Vector3 cappedTargetScreenPosition = tragetPositionScreenPoint;
+            if (cappedTargetScreenPosition.x <= borderSize) cappedTargetScreenPosition.x = borderSize;
+            if (cappedTargetScreenPosition.x >= Screen.width - borderSize) cappedTargetScreenPosition.x = Screen.width - borderSize;
+            if (cappedTargetScreenPosition.y <= borderSize) cappedTargetScreenPosition.y = borderSize;
+            if (cappedTargetScreenPosition.y >= Screen.height - borderSize) cappedTargetScreenPosition.y = Screen.height - borderSize;
+
+            Vector3 pointerWorldPosition = UICam.ScreenToWorldPoint(cappedTargetScreenPosition);
+            pointerRectTransform.position = pointerWorldPosition;
+            pointerRectTransform.localPosition = new Vector3(pointerRectTransform.localPosition.x, pointerRectTransform.localPosition.y, 0f);
+        }
+        else
+        {
+            pointerRectTransform.position = new Vector3(3000, 0, 0);
+            pointerRectTransform.localPosition = new Vector3(3000, 0, 0);
+        }   
     }
 
     void shoot()
@@ -546,10 +569,10 @@ public class controlObject : MonoBehaviour
         //}
 
         Vector3 forceUpDown = Vector3.Reflect(velocity, upDown.transform.up) - velocity;
-        Debug.DrawLine(positionDrawForce, positionDrawForce + forceUpDown, Color.magenta);
+        UnityEngine.Debug.DrawLine(positionDrawForce, positionDrawForce + forceUpDown, Color.magenta);
 
         Vector3 forceLeftRight = Vector3.Reflect(velocity, leftRight.transform.right) - velocity;
-        Debug.DrawLine(positionDrawForce, positionDrawForce + forceLeftRight, Color.yellow);
+        UnityEngine.Debug.DrawLine(positionDrawForce, positionDrawForce + forceLeftRight, Color.yellow);
     }
 
     void drawEleuronForces()
@@ -563,43 +586,43 @@ public class controlObject : MonoBehaviour
         if (leftRoll)
         {
             end = positionForDrawForceLeftAileron + transform.up * 1.5f;
-            Debug.DrawLine(positionForDrawForceLeftAileron, end, new Color(240, 94, 35));
+            UnityEngine.Debug.DrawLine(positionForDrawForceLeftAileron, end, new Color(240, 94, 35));
 
             end = positionForDrawForceRightAileron - transform.up * 1.5f;
-            Debug.DrawLine(positionForDrawForceRightAileron, end, new Color(240, 94, 35));
+            UnityEngine.Debug.DrawLine(positionForDrawForceRightAileron, end, new Color(240, 94, 35));
         }
         if (rightRoll)
         {
             end = positionForDrawForceLeftAileron - transform.up * 1.5f;
-            Debug.DrawLine(positionForDrawForceLeftAileron, end, new Color(240, 94, 35));
+            UnityEngine.Debug.DrawLine(positionForDrawForceLeftAileron, end, new Color(240, 94, 35));
 
             end = positionForDrawForceRightAileron + transform.up * 1.5f;
-            Debug.DrawLine(positionForDrawForceRightAileron, end, new Color(240, 94, 35));
+            UnityEngine.Debug.DrawLine(positionForDrawForceRightAileron, end, new Color(240, 94, 35));
         }
     }
 
     void drawCorpusForces()
     {
         Vector3 forceUpDownPlane = upDownDragCoeff * (Vector3.Reflect(velocity, transform.up) - velocity);
-        Debug.DrawLine(transform.position, transform.position + forceUpDownPlane, Color.magenta);
+        UnityEngine.Debug.DrawLine(transform.position, transform.position + forceUpDownPlane, Color.magenta);
 
         Vector3 forceLeftRightPlane = leftRightDragCoeff * (Vector3.Reflect(velocity, transform.right) - velocity);
-        Debug.DrawLine(transform.position, transform.position + forceLeftRightPlane, Color.yellow);
+        UnityEngine.Debug.DrawLine(transform.position, transform.position + forceLeftRightPlane, Color.yellow);
 
         Vector3 forceForwardBackPlane = forwardDragCoeff * (Vector3.Reflect(velocity, transform.forward) - velocity);
-        Debug.DrawLine(transform.position, transform.position + forceForwardBackPlane, Color.cyan);
+        UnityEngine.Debug.DrawLine(transform.position, transform.position + forceForwardBackPlane, Color.cyan);
     }
 
     void drawWingForces()
     {
         Vector3 forceUpDownPlane = upDownWingDragCoeff * (Vector3.Reflect(velocity, transform.up) - velocity);
-        Debug.DrawLine(transform.position, transform.position + forceUpDownPlane, Color.magenta);
+        UnityEngine.Debug.DrawLine(transform.position, transform.position + forceUpDownPlane, Color.magenta);
 
         Vector3 forceLeftRightPlane = leftRightWingDragCoeff * (Vector3.Reflect(velocity, transform.right) - velocity);
-        Debug.DrawLine(transform.position, transform.position + forceLeftRightPlane, Color.yellow);
+        UnityEngine.Debug.DrawLine(transform.position, transform.position + forceLeftRightPlane, Color.yellow);
 
         Vector3 forceForwardBackPlane = forwardWingDragCoeff * (Vector3.Reflect(velocity, transform.forward) - velocity);
-        Debug.DrawLine(transform.position, transform.position + forceForwardBackPlane, Color.yellow);
+        UnityEngine.Debug.DrawLine(transform.position, transform.position + forceForwardBackPlane, Color.yellow);
     }
 
     void calcAcceleration()

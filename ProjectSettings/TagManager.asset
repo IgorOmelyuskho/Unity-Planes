@@ -8,6 +8,7 @@ TagManager:
   - bulletTag
   - rocketTag
   - hitWithBullet
+  - UICamera
   layers:
   - Default
   - TransparentFX
