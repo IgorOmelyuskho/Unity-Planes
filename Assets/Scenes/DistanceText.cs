@@ -15,12 +15,14 @@ public class DistanceText : MonoBehaviour
     void LateUpdate()
     {
         Vector3 textPos = Camera.main.WorldToScreenPoint(this.transform.position);
-        textLabel.transform.position = textPos;
 
-        if (camera1)
-        {
-            var dist = Vector3.Distance(camera1.transform.position, transform.position);
+        var dist = Vector3.Distance(camera1.transform.position, transform.position);
+        if (textPos.z > 0)
             textLabel.text = dist.ToString("0.0");
-        }
+        else
+            textLabel.text = "";
+
+        textPos.z = 0;
+        textLabel.transform.position = textPos;
     }
 }

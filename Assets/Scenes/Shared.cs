@@ -81,6 +81,11 @@ public class Shared
         hitWithBulletObjects = GameObject.FindGameObjectsWithTag("hitWithBullet");
     }
 
+    static public float PDController(float p, float d, float pCoeff, float dCoeff)
+    {
+        return p * pCoeff + d * dCoeff;
+    }
+
     // aim without gravity and wind drag
     // selfSpeed - for rocket use Vector3.zero
     static public Vector3 CalculateAim(Vector3 targetPosition, Vector3 targetSpeed, Vector3 selfPosition, float bulletOrRocketSpeed, Vector3 selfSpeed)

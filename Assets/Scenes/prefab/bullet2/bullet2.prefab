@@ -94,6 +94,6 @@ MonoBehaviour:
   speed: {x: 0, y: 0, z: 0}
   speedMagnitude: 0
   initBulletSpeed: 500
-  distWhenBulletHitTarget: 5
+  distWhenBulletHitTarget: 3
   iterationCt: 4
   owner: {fileID: 0}

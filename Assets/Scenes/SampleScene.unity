@@ -884,7 +884,6 @@ GameObject:
   - component: {fileID: 443012595}
   - component: {fileID: 443012599}
   - component: {fileID: 443012596}
-  - component: {fileID: 443012598}
   m_Layer: 0
   m_Name: red_bull_air_race_plane
   m_TagString: hitWithBullet
@@ -900,8 +899,8 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 443012594}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 0
   m_LightProbeUsage: 0
@@ -1004,36 +1003,30 @@ MonoBehaviour:
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 443012599}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
-  angularVelocity: {x: 0, y: 0, z: 0}
-  actualAcceleration: {x: 0, y: 0, z: 0}
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   lineRenderer: {fileID: 443012595}
   UICam: {fileID: 1351212433}
-  velocity: {x: 0, y: 0, z: 0}
-  velocityMaggnitude: 0
-  power: 100
+  power: 0
   engineThrust: 0
-  xAngleBetweenAinAndDirectionCircle: 0
-  yAngleBetweenAinAndDirectionCircle: 0
+  xAngleBetweenForwardAndDirectionCircle: 0
+  yAngleBetweenForwardAndDirectionCircle: 0
   rectTransformDirectionCircle: {fileID: 2102348715}
   rectTransformDirectionCircleArrow: {fileID: 1533368671}
   rectTransformEnemyArrow: {fileID: 2100290025}
+  rectTransformQuadAroundTarget: {fileID: 2080579052}
   speedTextLabel: {fileID: 1991707336}
   powerTextLabel: {fileID: 1471560549}
   accelerationTextLabel: {fileID: 2060983527}
   attackAngleTextLabel: {fileID: 824233487}
   left_right_angle: {x: 0, y: 0, z: 0}
-  left_right_attack_angle: {x: 0, y: 0, z: 0}
-  left_right_attack_angle_magnitude: 0
   up_down_angle: {x: 0, y: 0, z: 0}
-  up_down_attack_angle: {x: 0, y: 0, z: 0}
-  up_down_attack_angle_magnitude: 0
   leftRight: {fileID: 1511063943}
   upDown: {fileID: 2142518500}
   wing: {fileID: 1234801427}
   leftAileron: {fileID: 543516475}
   rightAileron: {fileID: 1043478556}
   upDownAngleCoeff: 1
-  leftRightAngleCoeff: 1
+  leftRightAngleCoeff: 8
   engineThrustCoeff: 300
   engineThrustKG: 0
   controlPlaneDragCoeff: 0.08
@@ -1047,6 +1040,12 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.02
   controlPlaneDragEngineWindCoeff: 0.05
+  pCoeffLeftRight: 38
+  dCoeffLeftRight: 2
+  PDLrftRightResult: 0
+  pCoeffUpDown: 10
+  dCoeffUpDown: 1
+  PDUpDownResult: 0
 --- !u!4 &443012597
 Transform:
   m_ObjectHideFlags: 0
@@ -1054,8 +1053,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 443012594}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.54, y: 15.85, z: -18.72}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 10.31, y: 14.42, z: -18.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1482920299}
@@ -1065,44 +1064,7 @@ Transform:
   - {fileID: 1234801428}
   m_Father: {fileID: 0}
   m_RootOrder: 11
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &443012598
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 443012594}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!54 &443012599
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1115,7 +1077,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -1423,8 +1385,8 @@ MonoBehaviour:
   attachToTarget: 0
   controlObject: {fileID: 443012594}
   attachToControlObject: 1
-  lookAtControlObjectForward: 0
-  controlObjectOffset: 1
+  lookAtControlObjectForward: 1
+  controlObjectOffset: 0
   antiAircraft: {fileID: 816366617}
   attachToAntiAircraft: 0
   lookAtAntiAircraftForward: 0
@@ -1806,29 +1768,23 @@ MonoBehaviour:
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 642366125}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
-  angularVelocity: {x: 0, y: 0, z: 0}
-  actualAcceleration: {x: 0, y: 0, z: 0}
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   lineRenderer: {fileID: 0}
   UICam: {fileID: 0}
-  velocity: {x: 0, y: 0, z: 0}
-  velocityMaggnitude: 0
   power: 100
   engineThrust: 0
-  xAngleBetweenAinAndDirectionCircle: 0
-  yAngleBetweenAinAndDirectionCircle: 0
+  xAngleBetweenForwardAndDirectionCircle: 0
+  yAngleBetweenForwardAndDirectionCircle: 0
   rectTransformDirectionCircle: {fileID: 0}
   rectTransformDirectionCircleArrow: {fileID: 0}
   rectTransformEnemyArrow: {fileID: 0}
+  rectTransformQuadAroundTarget: {fileID: 0}
   speedTextLabel: {fileID: 1991707336}
   powerTextLabel: {fileID: 1471560549}
   accelerationTextLabel: {fileID: 2060983527}
   attackAngleTextLabel: {fileID: 824233487}
   left_right_angle: {x: 0, y: 0, z: 0}
-  left_right_attack_angle: {x: 0, y: 0, z: 0}
-  left_right_attack_angle_magnitude: 0
   up_down_angle: {x: 0, y: 0, z: 0}
-  up_down_attack_angle: {x: 0, y: 0, z: 0}
-  up_down_attack_angle_magnitude: 0
   leftRight: {fileID: 648239511}
   upDown: {fileID: 946620703}
   wing: {fileID: 1511298904}
@@ -1849,6 +1805,12 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.06
   controlPlaneDragEngineWindCoeff: 0.05
+  pCoeffLeftRight: 0
+  dCoeffLeftRight: 0
+  PDLrftRightResult: 0
+  pCoeffUpDown: 0
+  dCoeffUpDown: 0
+  PDUpDownResult: 0
 --- !u!54 &642366125
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2809,7 +2771,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 155.90002, y: -90}
+  m_AnchoredPosition: {x: 155.90002, y: -91.7}
   m_SizeDelta: {x: 307.1, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &824233487
@@ -3042,29 +3004,23 @@ MonoBehaviour:
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 913046520}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
-  angularVelocity: {x: 0, y: 0, z: 0}
-  actualAcceleration: {x: 0, y: 0, z: 0}
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   lineRenderer: {fileID: 0}
   UICam: {fileID: 0}
-  velocity: {x: 0, y: 0, z: 0}
-  velocityMaggnitude: 0
   power: 0
   engineThrust: 0
-  xAngleBetweenAinAndDirectionCircle: 0
-  yAngleBetweenAinAndDirectionCircle: 0
+  xAngleBetweenForwardAndDirectionCircle: 0
+  yAngleBetweenForwardAndDirectionCircle: 0
   rectTransformDirectionCircle: {fileID: 0}
   rectTransformDirectionCircleArrow: {fileID: 0}
   rectTransformEnemyArrow: {fileID: 0}
+  rectTransformQuadAroundTarget: {fileID: 0}
   speedTextLabel: {fileID: 1991707336}
   powerTextLabel: {fileID: 1471560549}
   accelerationTextLabel: {fileID: 2060983527}
   attackAngleTextLabel: {fileID: 824233487}
   left_right_angle: {x: 0, y: 0, z: 0}
-  left_right_attack_angle: {x: 0, y: 0, z: 0}
-  left_right_attack_angle_magnitude: 0
   up_down_angle: {x: 0, y: 0, z: 0}
-  up_down_attack_angle: {x: 0, y: 0, z: 0}
-  up_down_attack_angle_magnitude: 0
   leftRight: {fileID: 652560415}
   upDown: {fileID: 1987936582}
   wing: {fileID: 1321307307}
@@ -3085,6 +3041,12 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.02
   controlPlaneDragEngineWindCoeff: 0.05
+  pCoeffLeftRight: 0
+  dCoeffLeftRight: 0
+  PDLrftRightResult: 0
+  pCoeffUpDown: 0
+  dCoeffUpDown: 0
+  PDUpDownResult: 0
 --- !u!54 &913046520
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3338,6 +3300,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 1380468499}
+  - {fileID: 1206516047}
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3660,6 +3623,7 @@ RectTransform:
   - {fileID: 824233486}
   - {fileID: 2102348715}
   - {fileID: 1495913880}
+  - {fileID: 2080579052}
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3885,6 +3849,36 @@ Transform:
   - {fileID: 2116526466}
   m_Father: {fileID: 0}
   m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1206516046
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1206516047}
+  m_Layer: 0
+  m_Name: forSeveralTag
+  m_TagString: hitWithBullet
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1206516047
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206516046}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_Children: []
+  m_Father: {fileID: 948023818}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1234801427
 GameObject:
@@ -4545,7 +4539,7 @@ GameObject:
   - component: {fileID: 1414858574}
   - component: {fileID: 1414858573}
   m_Layer: 0
-  m_Name: rocketBody (1)
+  m_Name: rocketBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4798,7 +4792,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 155.90002, y: -50}
+  m_AnchoredPosition: {x: 155.90002, y: -43.7}
   m_SizeDelta: {x: 307.1, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1471560549
@@ -4880,7 +4874,7 @@ TrailRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1482920298}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -6089,7 +6083,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 155.90002, y: -25}
+  m_AnchoredPosition: {x: 155.90002, y: -18}
   m_SizeDelta: {x: 307.1, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1991707336
@@ -6398,9 +6392,81 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 155.90002, y: -70}
+  m_AnchoredPosition: {x: 155.90002, y: -68.7}
   m_SizeDelta: {x: 307.1, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2080579051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2080579052}
+  - component: {fileID: 2080579054}
+  - component: {fileID: 2080579053}
+  m_Layer: 5
+  m_Name: quad_around_target
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2080579052
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080579051}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_Children: []
+  m_Father: {fileID: 1010516431}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -89, y: -489}
+  m_SizeDelta: {x: 250, y: 250}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2080579053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080579051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: de1d90bc10e448349a1a08935d235973, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!222 &2080579054
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2080579051}
+  m_CullTransparentMesh: 0
 --- !u!1 &2081587559
 GameObject:
   m_ObjectHideFlags: 0
@@ -6983,7 +7049,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -745, y: -264}
+  m_AnchoredPosition: {x: -335, y: -509}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2134992082

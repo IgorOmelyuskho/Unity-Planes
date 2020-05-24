@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 public class controlObject : MonoBehaviour
 {
     Camera cam;
     float mouseSensitivity = 23;
-    RectTransform aim;
+    RectTransform forwardDirection;
     Vector3 prevVelocity;
     float attackAngle;
 
@@ -29,6 +30,11 @@ public class controlObject : MonoBehaviour
 
     GameObject target;
 
+    Vector3 actualAcceleration;
+
+    Vector3 velocity;
+    float velocityMaggnitude;
+
 
     // public
     public float distForAddControlPlaneForce;
@@ -36,25 +42,22 @@ public class controlObject : MonoBehaviour
     public Vector3 tensor1;
     public Rigidbody rb;
     public Bullet2 bullet;
-    public Vector3 angularVelocity;
-    public Vector3 actualAcceleration;
+    public Vector3 localAngularVelocity;
 
     public LineRenderer lineRenderer;
 
     public Camera UICam;
 
-    public Vector3 velocity;
-    public float velocityMaggnitude;
-
     [Range(0.0f, 100f)] public float power = 0;
     public float engineThrust = 0;
 
-    public float xAngleBetweenAinAndDirectionCircle;
-    public float yAngleBetweenAinAndDirectionCircle;
+    public float xAngleBetweenForwardAndDirectionCircle;
+    public float yAngleBetweenForwardAndDirectionCircle;
 
     public RectTransform rectTransformDirectionCircle;
     public RectTransform rectTransformDirectionCircleArrow;
     public RectTransform rectTransformEnemyArrow;
+    public RectTransform rectTransformQuadAroundTarget;
 
     public Text speedTextLabel;
     public Text powerTextLabel;
@@ -62,11 +65,7 @@ public class controlObject : MonoBehaviour
     public Text attackAngleTextLabel;
 
     public Vector3 left_right_angle;
-    public Vector3 left_right_attack_angle;
-    public float left_right_attack_angle_magnitude;
     public Vector3 up_down_angle;
-    public Vector3 up_down_attack_angle;
-    public float up_down_attack_angle_magnitude;
 
     public GameObject leftRight;
     public GameObject upDown;
@@ -91,7 +90,13 @@ public class controlObject : MonoBehaviour
     public float angularDragCoeff;
     public float controlPlaneDragEngineWindCoeff;
 
-    Mesh mesh;
+    public float pCoeffLeftRight;
+    public float dCoeffLeftRight;
+    public float PDLrftRightResult;
+
+    public float pCoeffUpDown;
+    public float dCoeffUpDown;
+    public float PDUpDownResult;
 
     void Start()
     {
@@ -99,12 +104,12 @@ public class controlObject : MonoBehaviour
 
         cam = Camera.main;
 
-        aim = GameObject.Find("direction_where_look_control_object").GetComponent<RectTransform>();
+        forwardDirection = GameObject.Find("direction_where_look_control_object").GetComponent<RectTransform>();
 
         rectTransformDirectionCircle.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
         rb = GetComponent<Rigidbody>();
-        rb.velocity = new Vector3(0, 0, 55);
+        rb.velocity = transform.forward * 2;
         rb.maxAngularVelocity = 20;
         rb.inertiaTensor = tensor1 * rb.mass;
 
@@ -136,15 +141,16 @@ public class controlObject : MonoBehaviour
 
         addEngineForce();
         addCorpusForces();
-        addControlPlaneForces();
         addEleuronForces();
         addWingForces();
         addControlPlaneForcesWithEngineWind();
+        addControlPlaneForces();
 
         calcAcceleration();
         calcAttackAngles();
 
-        angularVelocity = rb.angularVelocity;
+        localAngularVelocity = transform.InverseTransformDirection(rb.angularVelocity) * Mathf.Rad2Deg; // deg / sec
+
         rb.angularDrag = angularDragCoeff * rb.velocity.magnitude + 1f;
     }
 
@@ -156,10 +162,15 @@ public class controlObject : MonoBehaviour
         //drawWingForces();
     }
 
+    void OnGUI()
+    {
+    }
+
     void LateUpdate() // late updat - not late fixed update
     {
         setAimAndDirectionCirclePosition();
         drawArrows();
+        drawQuadAroundTarget();
 
         if (speedTextLabel)
             speedTextLabel.text = "velocity: " + (velocity.magnitude * 3.6).ToString("0.0") + " km/h";
@@ -198,9 +209,9 @@ public class controlObject : MonoBehaviour
         rectTransformDirectionCircle.position = directionCirclePosition;
 
         aimInWorldSpacPosition = transform.position + transform.forward * aimDistist;
-        Vector3 aimPosition = cam.WorldToScreenPoint(aimInWorldSpacPosition);
-        aimPosition.z = 0;
-        aim.position = aimPosition;
+        Vector3 forwardDirectionPos = cam.WorldToScreenPoint(aimInWorldSpacPosition);
+        forwardDirectionPos.z = 0;
+        forwardDirection.position = forwardDirectionPos;
     }
 
     void drawArrows()
@@ -211,13 +222,21 @@ public class controlObject : MonoBehaviour
             drawArrowIfObjectOutsideScreens(target.transform.position, rectTransformEnemyArrow);
     }
 
+    void drawQuadAroundTarget()
+    {
+        Vector3 screenPos = cam.WorldToScreenPoint(target.transform.position);
+        if (screenPos.z < 0) return; 
+        screenPos.z = 0;
+        rectTransformQuadAroundTarget.position = screenPos;
+    }
+
     void drawArrowIfObjectOutsideScreens(Vector3 targetPosition, RectTransform pointerRectTransform)
     {
         float borderSize = 50f;
         Vector3 tragetPositionScreenPoint = cam.WorldToScreenPoint(targetPosition);
         bool isOffsetScreen = tragetPositionScreenPoint.x <= borderSize || tragetPositionScreenPoint.x >= Screen.width - borderSize || tragetPositionScreenPoint.y <= borderSize || tragetPositionScreenPoint.y >= Screen.height - borderSize;
 
-        if (isOffsetScreen)
+        if (isOffsetScreen /*|| tragetPositionScreenPoint.z < 0*/)
         {
             Vector3 cappedTargetScreenPosition = tragetPositionScreenPoint;
             if (cappedTargetScreenPosition.x <= borderSize) cappedTargetScreenPosition.x = borderSize;
@@ -231,6 +250,8 @@ public class controlObject : MonoBehaviour
 
             Vector2 arrowPosInScreen = pointerRectTransform.localPosition;
             float angle = Vector2.SignedAngle(Vector2.right, arrowPosInScreen);
+            //if (tragetPositionScreenPoint.z < 0)
+            //    angle = angle + 180;
             pointerRectTransform.localEulerAngles = new Vector3(0, 0, angle);
         }
         else
@@ -273,12 +294,6 @@ public class controlObject : MonoBehaviour
     void calcAttackAngles()
     {
         attackAngle = Vector3.Angle(transform.forward, rb.velocity);
-
-        left_right_attack_angle = Vector3.ProjectOnPlane(rb.velocity, leftRight.transform.forward);
-        left_right_attack_angle_magnitude = left_right_attack_angle.magnitude;
-
-        up_down_attack_angle = Vector3.ProjectOnPlane(rb.velocity, upDown.transform.forward);
-        up_down_attack_angle_magnitude = up_down_attack_angle.magnitude;
     }
 
     void renderTransformGizmos()
@@ -418,33 +433,33 @@ public class controlObject : MonoBehaviour
     void rotateControlPlaneByMouse()
     {
         float maxAngle = 45;
-        float maxRotationSpeed = 3f;
+        float maxRotationSpeed = 15f;
 
         float rotationSpeedCoeff = 3;
         Vector3 directionCircleDir = directionCircleInWorldWorldPosition - transform.position;
 
-        xAngleBetweenAinAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.up, true);
-        yAngleBetweenAinAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
+        yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.up, true);
+        xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
 
-        //if (yAngleBetweenAinAndDirectionCircle > 0)
+        //if (xAngleBetweenAinAndDirectionCircle > 0)
         //{
         //    upDown.transform.Rotate(Vector3.right, maxRotationSpeed);
         //    if (Vector3.Angle(transform.forward, upDown.transform.forward) > maxAngle)
         //        upDown.transform.localRotation = Quaternion.Euler(maxAngle, 0, 0);
         //}
-        //if (yAngleBetweenAinAndDirectionCircle < 0)
+        //if (xAngleBetweenAinAndDirectionCircle < 0)
         //{
         //    upDown.transform.Rotate(Vector3.right, -maxRotationSpeed);
         //    if (Vector3.Angle(transform.forward, upDown.transform.forward) > maxAngle)
         //        upDown.transform.localRotation = Quaternion.Euler(-maxAngle, 0, 0);
         //}
-        //if (xAngleBetweenAinAndDirectionCircle > 0)
+        //if (yAngleBetweenAinAndDirectionCircle > 0)
         //{
         //    leftRight.transform.Rotate(Vector3.up, maxRotationSpeed);
         //    if (Vector3.Angle(transform.forward, leftRight.transform.forward) > maxAngle)
         //        leftRight.transform.localRotation = Quaternion.Euler(0, maxAngle, 0);
         //}
-        //if (xAngleBetweenAinAndDirectionCircle < 0)
+        //if (yAngleBetweenAinAndDirectionCircle < 0)
         //{
         //    leftRight.transform.Rotate(Vector3.up, -maxRotationSpeed);
         //    if (Vector3.Angle(transform.forward, leftRight.transform.forward) > maxAngle)
@@ -452,35 +467,27 @@ public class controlObject : MonoBehaviour
         //}
 
 
-        // not correct rotation speed at nott big angles
-        float upDownTargetAngle = Mathf.Clamp(upDownAngleCoeff * Mathf.Abs(yAngleBetweenAinAndDirectionCircle), 0, maxAngle);
+        PDUpDownResult = Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
+        PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
 
-        float additionalFactorForLeftRight = 5 / Mathf.Pow(Mathf.Abs(xAngleBetweenAinAndDirectionCircle), 0.05f * Mathf.Abs(xAngleBetweenAinAndDirectionCircle)) + 1;
-        float leftRightTargetAngle = Mathf.Clamp(leftRightAngleCoeff * Mathf.Abs(xAngleBetweenAinAndDirectionCircle) * additionalFactorForLeftRight, 0, maxAngle);
+        float upDownTargetAngle = Mathf.Clamp(PDUpDownResult, -maxAngle, maxAngle);
+        float leftRightTargetAngle = Mathf.Clamp(PDLrftRightResult, -maxAngle, maxAngle);
 
-        if (yAngleBetweenAinAndDirectionCircle > 0)
+        if (PDUpDownResult > 0)
         {
-            upDown.transform.Rotate(Vector3.right, maxRotationSpeed);
-            if (Vector3.Angle(transform.forward, upDown.transform.forward) > upDownTargetAngle)
-                upDown.transform.localRotation = Quaternion.Euler(upDownTargetAngle, 0, 0);
+            upDown.transform.localRotation = Quaternion.Euler(upDownTargetAngle, 0, 0);
         }
-        if (yAngleBetweenAinAndDirectionCircle < 0)
+        if (PDUpDownResult < 0)
         {
-            upDown.transform.Rotate(Vector3.right, -maxRotationSpeed);
-            if (Vector3.Angle(transform.forward, upDown.transform.forward) > upDownTargetAngle)
-                upDown.transform.localRotation = Quaternion.Euler(-upDownTargetAngle, 0, 0);
+            upDown.transform.localRotation = Quaternion.Euler(upDownTargetAngle, 0, 0);
         }
-        if (xAngleBetweenAinAndDirectionCircle > 0)
+        if (PDLrftRightResult > 0)
         {
-            leftRight.transform.Rotate(Vector3.up, maxRotationSpeed);
-            if (Vector3.Angle(transform.forward, leftRight.transform.forward) > leftRightTargetAngle)
-                leftRight.transform.localRotation = Quaternion.Euler(0, leftRightTargetAngle, 0);
+            leftRight.transform.localRotation = Quaternion.Euler(0, leftRightTargetAngle, 0);
         }
-        if (xAngleBetweenAinAndDirectionCircle < 0)
+        if (PDLrftRightResult < 0)
         {
-            leftRight.transform.Rotate(Vector3.up, -maxRotationSpeed);
-            if (Vector3.Angle(transform.forward, leftRight.transform.forward) > leftRightTargetAngle)
-                leftRight.transform.localRotation = Quaternion.Euler(0, -leftRightTargetAngle, 0);
+            leftRight.transform.localRotation = Quaternion.Euler(0, leftRightTargetAngle, 0);
         }
     }
 
@@ -493,19 +500,19 @@ public class controlObject : MonoBehaviour
 
     void addControlPlaneForces()
     {
-        //controlPlaneDrug = 10;
+        //float controlPlaneDrag = 1000;
         float controlPlaneDrag = velocity.magnitude * controlPlaneDragCoeff;
 
         Vector3 positionForAddForce = transform.position - transform.forward * distForAddControlPlaneForce;
 
         //if (moveUp)
-        //    rb.AddForceAtPosition(-transform.up * controlPlaneDrug, positionForAddForce);
+        //    rb.AddForceAtPosition(-transform.up * controlPlaneDrag, positionForAddForce);
         //if (moveDown)
-        //    rb.AddForceAtPosition(transform.up * controlPlaneDrug, positionForAddForce);
+        //    rb.AddForceAtPosition(transform.up * controlPlaneDrag, positionForAddForce);
         //if (moveLeft)
-        //    rb.AddForceAtPosition(transform.right * controlPlaneDrug, positionForAddForce);
+        //    rb.AddForceAtPosition(transform.right * controlPlaneDrag, positionForAddForce);
         //if (moveRight)
-        //    rb.AddForceAtPosition(-transform.right * controlPlaneDrug, positionForAddForce);
+        //    rb.AddForceAtPosition(-transform.right * controlPlaneDrag, positionForAddForce);
 
 
         Vector3 forceUpDown = controlPlaneDrag * (Vector3.Reflect(velocity, upDown.transform.up) - velocity);
@@ -579,6 +586,9 @@ public class controlObject : MonoBehaviour
         Vector3 forceLeftRight = controlPlaneDrag * (Vector3.Reflect(transform.forward, leftRight.transform.right) - transform.forward);
         rb.AddForceAtPosition(forceLeftRight, positionForAddForce);
     }
+
+
+
 
     void drawControlPlaneForces()
     {
@@ -662,6 +672,9 @@ public class controlObject : MonoBehaviour
         Vector3 forceForwardBackPlane = forwardWingDragCoeff * (Vector3.Reflect(velocity, transform.forward) - velocity);
         UnityEngine.Debug.DrawLine(transform.position, transform.position + forceForwardBackPlane, Color.yellow);
     }
+
+
+
 
     void calcAcceleration()
     {
