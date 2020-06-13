@@ -48,6 +48,7 @@ public class CameraOperate : MonoBehaviour
     public GameObject controlObject;
     public bool attachToControlObject = false;
     public bool lookAtControlObjectForward = true;
+    public bool lookAtControlObjectCenter = false;
     public bool controlObjectOffset = true;
 
     public GameObject antiAircraft;
@@ -65,6 +66,12 @@ public class CameraOperate : MonoBehaviour
     private float minFov = 1f;
     private float maxFov = 60f;
     public float rotateSpeedCoeff;
+
+    float xCamRotate = 0.0f;
+    float yCamRotate = 0.0f;
+
+
+    public float dst = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -204,44 +211,89 @@ public class CameraOperate : MonoBehaviour
                     deltaPosition -= q;
                 }
 
-                if (Input.GetMouseButton(1))
-                {
-                    offsetPosition += deltaPosition;
-                } 
+                //-------------------------------------------------------------------------------------------------
 
-                if (attachToTarget == true)
-                {
-                       m_transform.position = target.transform.position + offsetPosition;
-                }
-                else if (attachToControlObject == true)
-                {
-                    if (controlObjectOffset)
-                    {
-                        m_transform.position = controlObject.transform.position + offsetPosition;
-                    } else
-                    {
-                        //m_transform.position = physicsRocket.transform.position + new Vector3(0, 1, -8);
-                        m_transform.position = controlObject.transform.position - controlObject.transform.forward * 15 + Vector3.up * 2;
-                    }
-                    if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
-                    {
-                        m_transform.LookAt(controlObject.transform.forward * 1000000);
-                    }
-                }
-                else if (attachToAntiAircraft == true)
-                {
-                    m_transform.position = antiAircraft.transform.position + new Vector3(0, 1, 0);
-                    if (lookAtAntiAircraftForward)
-                    {
-                        m_transform.LookAt(antiAircraft.transform.forward * 1000000);
-                    }
-                }
-                else
-                {
-                    m_transform.position += deltaPosition;
-                }
+                customCamLogic(deltaPosition);
             }
         }
+    }
+
+    void customCamLogic(Vector3 deltaPosition)
+    {
+        float fwd = 6f;
+        float up = 1.0f;
+        Vector3 camOffset = controlObject.transform.forward * fwd - Vector3.up * up;
+
+        if (Input.GetMouseButton(1))
+        {
+            offsetPosition += deltaPosition;
+        }
+
+        if (attachToTarget == true)
+        {
+            m_transform.position = target.transform.position + offsetPosition;
+        }
+        else if (attachToControlObject == true)
+        {
+            if (controlObjectOffset)
+            {
+                m_transform.position = controlObject.transform.position + offsetPosition;
+            }
+            else
+            {
+                m_transform.position = controlObject.transform.position - camOffset;
+            }
+
+            if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
+            {
+                m_transform.LookAt(controlObject.transform.forward * 1000000);
+            }
+            else if (lookAtControlObjectCenter && !Input.GetKey(KeyCode.Space))
+            {
+                m_transform.LookAt(controlObject.transform.position);
+            }
+            else
+            {
+                rotateAroundControlObject(camOffset.magnitude);
+            }
+        }
+        else if (attachToAntiAircraft == true)
+        {
+            m_transform.position = antiAircraft.transform.position + new Vector3(0, 1, 0);
+            if (lookAtAntiAircraftForward)
+            {
+                m_transform.LookAt(antiAircraft.transform.forward * 1000000);
+            }
+        }
+        else
+        {
+            m_transform.position += deltaPosition;
+        }
+
+        dst = (transform.position - controlObject.transform.position).magnitude;
+    }
+
+    // look at controlObject center
+    void rotateAroundControlObject(float distance)
+    {
+        float rotationSpeed = 120.0f;
+
+        if (Input.GetButtonDown("Space"))
+        {
+            xCamRotate = transform.eulerAngles.y;
+            yCamRotate = transform.eulerAngles.x;
+        }
+
+        xCamRotate += Input.GetAxis("Mouse X") * rotationSpeed * 0.1f;
+        yCamRotate -= Input.GetAxis("Mouse Y") * rotationSpeed * 0.1f;
+
+        Quaternion rotation = Quaternion.Euler(yCamRotate, xCamRotate, 0);
+
+        Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
+        Vector3 position = rotation * negDistance + controlObject.transform.position;
+
+        transform.rotation = rotation;
+        transform.position = position;
     }
 }
 

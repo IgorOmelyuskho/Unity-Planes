@@ -81,6 +81,28 @@ public class Shared
         hitWithBulletObjects = GameObject.FindGameObjectsWithTag("hitWithBullet");
     }
 
+    public static float GetSignedAngle(Quaternion A, Quaternion B, Vector3 axis)
+    {
+        float angle = 0f;
+        Vector3 angleAxis = Vector3.zero;
+        (B * Quaternion.Inverse(A)).ToAngleAxis(out angle, out angleAxis);
+        if (Vector3.Angle(axis, angleAxis) > 90f)
+        {
+            angle = -angle;
+        }
+        return Mathf.DeltaAngle(0f, angle);
+    }
+
+    public static float ClampAngle(float angle, float min, float max)
+    {
+        if (angle < -360F)
+            angle += 360F;
+        if (angle > 360F)
+            angle -= 360F;
+        return Mathf.Clamp(angle, min, max);
+    }
+
+
     static public float PDController(float p, float d, float pCoeff, float dCoeff)
     {
         return p * pCoeff + d * dCoeff;

@@ -9,7 +9,7 @@ public class createCubeClones : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-       float dist = 50;
+       float dist = 250;
        int countByOneSide = 100;
        for (var x = -countByOneSide; x <= countByOneSide; x++)
         {
