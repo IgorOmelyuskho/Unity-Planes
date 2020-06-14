@@ -86,6 +86,7 @@
     <Compile Include="Assets\Scenes\camera.cs" />
     <Compile Include="Assets\Scenes\controlObject.cs" />
     <Compile Include="Assets\Scenes\DistanceText.cs" />
+    <Compile Include="Assets\Scenes\InfoNearObjClass.cs" />
     <Compile Include="Assets\Scenes\Math3d.cs" />
     <Compile Include="Assets\Scenes\prefab\bullet\Bullet.cs" />
     <Compile Include="Assets\Scenes\prefab\bullet2\Bullet2.cs" />

@@ -8,10 +8,11 @@ public class Bullet2 : MonoBehaviour
     public GameObject target;
     public Vector3 speed;
     public float speedMagnitude;
-    public float initBulletSpeed = 1150.0f;
+    public float initBulletSpeed = 0f;
     public float distWhenBulletHitTarget = 5f;
     public int iterationCt = 4;
     public GameObject owner;
+    public float hpHit = 10f;
 
     void Start()
     {
@@ -27,18 +28,20 @@ public class Bullet2 : MonoBehaviour
     void step()
     {
         i++;
-        foreach (GameObject hitWithBulletObject in Shared.hitWithBulletObjects)
+        foreach (GameObject hitWithBulletOrRocketObject in Shared.hitWithBulletOrRocketObjects)
         {
-            if (hitWithBulletObject == owner) continue;
+            if (hitWithBulletOrRocketObject == owner) continue;
 
-            if ((transform.position - hitWithBulletObject.transform.position).magnitude < initBulletSpeed * Time.deltaTime)
+            if ((transform.position - hitWithBulletOrRocketObject.transform.position).magnitude < initBulletSpeed * Time.deltaTime)
             {
                 for (var j = 0; j < iterationCt; j++)
                 {
                     Vector3 buulletPosition = transform.position + (speedMagnitude / iterationCt) * speed.normalized * j * Time.fixedDeltaTime;
-                    if ((buulletPosition - hitWithBulletObject.transform.position).magnitude < distWhenBulletHitTarget)
+                    if ((buulletPosition - hitWithBulletOrRocketObject.transform.position).magnitude < distWhenBulletHitTarget)
                     {
                         Destroy(gameObject);
+                        hitWithBulletOrRocketObject.GetComponent<controlObject>().hp -= hpHit;
+                        break;
                     }
                 }
             }

@@ -20,8 +20,9 @@ e1bbf0ab858085e38fae6b12ebbdcd35 UnityEngine.Timeline.dll:UnityEngine.Timeline.G
 e1bbf0ab858085e38fae6b12ebbdcd35 UnityEngine.Timeline.dll:UnityEngine.Timeline.PlayableTrack
 201e3fde670b00545944bb3db215c80a UnityEngine.Timeline.dll:UnityEngine.Timeline.TimelineAsset
 e7a73f5f78ba6445195ec23b74a1ce2d Unity.TextMeshPro.dll:TMPro.TMP_ScrollbarEventHandler
-05403dd0ad04817027bbd5a2f19d0b93 Assembly-CSharp.dll:.controlObject
+b29df4d45156d070efc8e9560bdde0a4 Assembly-CSharp.dll:.controlObject
 a7ecb24666ab83a6aa8baf2226939bae Assembly-CSharp.dll:.Rocket2
+b3d7af7abcb0c57c3fee69cdda94a823 Assembly-CSharp.dll:.InfoNearObjClass
 cf9f5cf2c3145a37ac07f00e50e460f9 UnityEngine.UI.dll:UnityEngine.UI.AspectRatioFitter
 71bb6a6b6c8f052f948db64c7dd3ca4f UnityEngine.UI.dll:UnityEngine.EventSystems.BaseInput
 507174d46dacbc5fe45e28485db5dd1e UnityEngine.UI.dll:UnityEngine.UI.Button
@@ -116,7 +117,7 @@ e0ee4b3d4e27318934cc940a969d3d96 UnityEngine.Networking.dll:UnityEngine.Networki
 ad9173d3a69d99153f38ed4b62226129 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransform
 9b895dcabbc1faf095c000c32d471fd0 UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformChild
 5887ef1bc706b22b773d253fd443ceef UnityEngine.Networking.dll:UnityEngine.Networking.NetworkTransformVisualizer
-e84b87960cb83e574100dab97f389832 Assembly-CSharp.dll:.CameraOperate
+a5360687097cead3d3f22e8ac45a20d7 Assembly-CSharp.dll:.CameraOperate
 d251bf88db6c95a6b1aa0b69298da9ef UnityEngine.SpatialTracking.dll:UnityEngine.SpatialTracking.TrackedPoseDriver
 b8a5e8091ab0b8861d2add371082c5e0 Unity.TextMeshPro.dll:TMPro.TMP_SpriteAsset
 a397864c1544b7b621efad230b91862c Assembly-CSharp.dll:.Bullet
@@ -127,7 +128,7 @@ b3ab2106268377ffe25dd18ac23dca28 Unity.TextMeshPro.dll:TMPro.TMP_Asset
 71bb6a6b6c8f052f948db64c7dd3ca4f Assembly-CSharp.dll:UnityStandardAssets.Water.Displace
 71bb6a6b6c8f052f948db64c7dd3ca4f Unity.TextMeshPro.dll:TMPro.TMP_SpriteAnimator
 5b1d3232bdaba52e260d32a9eb24296b Assembly-CSharp.dll:CodeMonkey.MonoBehaviours.CameraFollowSetup
-6d5d57a004d9956ecaad30803fcec73f Assembly-CSharp.dll:.Bullet2
+7f3c09768d43b42f4670adaac9b87982 Assembly-CSharp.dll:.Bullet2
 3a128da034a20ca072ac0199742cd1cd Assembly-CSharp.dll:.Quad
 4fd8bf02e3089425d3502e26c44ba31a Unity.TextMeshPro.dll:TMPro.TextContainer
 cc7a3f0585b5b26a64f0d749b1e03993 Assembly-CSharp.dll:.Rocket

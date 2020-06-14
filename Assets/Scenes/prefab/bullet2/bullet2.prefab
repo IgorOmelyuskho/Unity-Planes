@@ -93,7 +93,8 @@ MonoBehaviour:
   target: {fileID: 0}
   speed: {x: 0, y: 0, z: 0}
   speedMagnitude: 0
-  initBulletSpeed: 500
+  initBulletSpeed: 900
   distWhenBulletHitTarget: 3
   iterationCt: 4
   owner: {fileID: 0}
+  hpHit: 10

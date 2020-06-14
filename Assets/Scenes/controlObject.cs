@@ -36,6 +36,10 @@ public class controlObject : MonoBehaviour
     Vector3 velocity;
     float velocityMaggnitude;
 
+    int counterForShoot;
+
+    public List<GameObject> infoNearObjList = new List<GameObject>();
+
 
     // public
     public float distForAddControlPlaneOrEngineForce;
@@ -45,6 +49,8 @@ public class controlObject : MonoBehaviour
     public Bullet2 bullet;
     public Vector3 localAngularVelocity;
 
+    public GameObject prefabForShowInfo;
+
     public LineRenderer lineRenderer;
 
     public Camera UICam;
@@ -53,6 +59,8 @@ public class controlObject : MonoBehaviour
 
     [Range(0.0f, 100f)] public float power = 0;
     public float engineThrust = 0;
+
+    public Image hpBar;
 
     public RectTransform rectTransformDirectionCircle;
     public RectTransform rectTransformDirectionCircleArrow;
@@ -75,6 +83,8 @@ public class controlObject : MonoBehaviour
 
     public bool isPropPlane;
     public bool tractionVectorControlEnabled;
+
+    [Range(0.0f, 100f)] public float hp = 100f;
 
     // если = 0 - тоже самое что вектор тяги неуправляемый, если = 1 - поворачивается также как и рули направления/высоты, можно задать больше 1
     public float tractionVectorControlCoeff = 0.3f;
@@ -124,7 +134,7 @@ public class controlObject : MonoBehaviour
 
         lineRenderer.positionCount = 2;
 
-        //mesh = GetComponent<MeshFilter>().mesh;
+        prepareInfoNearObjArr();
     }
 
     void FixedUpdate()
@@ -136,8 +146,6 @@ public class controlObject : MonoBehaviour
 
         velocity = rb.velocity;
         velocityMaggnitude = rb.velocity.magnitude;
-
-
 
         if (moveLeft || moveRight || moveDown || moveUp)
             rotateControlPlaneByKey();
@@ -158,6 +166,8 @@ public class controlObject : MonoBehaviour
         localAngularVelocity = transform.InverseTransformDirection(rb.angularVelocity) * Mathf.Rad2Deg; // deg / sec
 
         rb.angularDrag = angularDragCoeff * rb.velocity.magnitude + 1f;
+
+        calcHP();
     }
 
     void Update()
@@ -178,6 +188,7 @@ public class controlObject : MonoBehaviour
     {
         setAimAndDirectionCirclePosition();
         drawArrows();
+        drawInfoNearObjects();
         drawQuadAroundTarget();
 
         if (speedTextLabel)
@@ -212,12 +223,55 @@ public class controlObject : MonoBehaviour
         //Bounds bounds = mesh.bounds;
     }
 
+    void prepareInfoNearObjArr()
+    {
+        foreach (GameObject obj in Shared.hitWithBulletOrRocketObjects)
+        {
+            if (obj == gameObject) continue;
+
+            GameObject clone = Instantiate(prefabForShowInfo, Vector3.zero, Quaternion.identity, prefabForShowInfo.transform.parent.transform);
+            clone.GetComponent<InfoNearObjClass>().gameObj = obj;
+            infoNearObjList.Add(clone);
+        }
+    }
+
+    void drawInfoNearObjects()
+    {
+        foreach (GameObject obj in infoNearObjList)
+        {
+            Vector3 wrapObjPosition = Camera.main.WorldToScreenPoint(obj.GetComponent<InfoNearObjClass>().gameObj.transform.position);
+            GameObject textForDist = obj.transform.GetChild(0).gameObject;
+
+            var dist = Vector3.Distance(cam.transform.position, obj.GetComponent<InfoNearObjClass>().gameObj.transform.position);
+            textForDist.GetComponent<Text>().text = dist.ToString("0");
+
+            if (wrapObjPosition.z > 0)
+            {
+                wrapObjPosition.z = 0;
+                obj.GetComponent<RectTransform>().transform.position = wrapObjPosition;
+            }
+            else
+                obj.GetComponent<RectTransform>().transform.position = new Vector3(3000, 0, 0);
+
+            // hp
+            Image hpBar = obj.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>();
+            hpBar.fillAmount = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().hp / 100;
+        }
+    }
+
     void setAimAndDirectionCirclePosition()
     {
         aimInWorldSpacPosition = transform.position + transform.forward * aimDistist;
         Vector3 forwardDirectionPos = cam.WorldToScreenPoint(aimInWorldSpacPosition);
-        forwardDirectionPos.z = 0;
-        forwardDirection.position = forwardDirectionPos;
+        if (forwardDirectionPos.z < 0)
+        {
+            forwardDirection.position = new Vector3(3000, 3000, 0);
+        }
+        else
+        {
+            forwardDirectionPos.z = 0;
+            forwardDirection.position = forwardDirectionPos;
+        }
 
         if (!Input.GetKey(KeyCode.Space))
         {
@@ -286,8 +340,10 @@ public class controlObject : MonoBehaviour
 
     void shoot()
     {
-        if (Input.GetMouseButton(0)) // GetMouseButton GetMouseButtonDown
+        counterForShoot++;
+        if (Input.GetMouseButton(0) && counterForShoot > 0) // GetMouseButton GetMouseButtonDown
         {
+            counterForShoot = 0;
             Bullet2 bulletClone = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * 1, transform.rotation);
             bulletClone.speed = bulletClone.initBulletSpeed * new Vector3(transform.forward.x, transform.forward.y, transform.forward.z) + rb.velocity;
             bulletClone.owner = gameObject;
@@ -296,11 +352,11 @@ public class controlObject : MonoBehaviour
 
     void showAimPoint()
     {
-        //foreach (GameObject hitWithBulletObject in Shared.hitWithBulletObjects)
+        //foreach (GameObject hitWithBulletOrRocketObject in Shared.hitWithBulletOrRocketObjects)
         //{
-        //    if (gameObject != hitWithBulletObject)
+        //    if (gameObject != hitWithBulletOrRocketObject)
         //    {
-        //        target = hitWithBulletObject;
+        //        target = hitWithBulletOrRocketObject;
         //        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<Rigidbody>().velocity, transform.position, bullet.initBulletSpeed, rb.velocity);
         //        lineRenderer.SetPosition(0, target.transform.position);
         //        lineRenderer.SetPosition(1, aimPosition);
@@ -706,7 +762,10 @@ public class controlObject : MonoBehaviour
     }
 
 
-
+    void calcHP()
+    {
+        hpBar.fillAmount = hp / 100;
+    }
 
     void calcAcceleration()
     {
