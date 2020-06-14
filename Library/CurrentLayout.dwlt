@@ -46,7 +46,7 @@ MonoBehaviour:
     y: 0
     width: 1920
     height: 997
-  m_MinSize: {x: 950, y: 448}
+  m_MinSize: {x: 950, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
 --- !u!114 &3
 MonoBehaviour:
@@ -115,7 +115,7 @@ MonoBehaviour:
   m_MinSize: {x: 509, y: 398}
   m_MaxSize: {x: 14004, y: 14048}
   vertical: 0
-  controlID: 17076
+  controlID: 1811
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_MinSize: {x: 232, y: 398}
   m_MaxSize: {x: 10002, y: 14048}
   vertical: 1
-  controlID: 17182
+  controlID: 1743
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -165,7 +165,7 @@ MonoBehaviour:
   m_MinSize: {x: 206, y: 124}
   m_MaxSize: {x: 8006, y: 4024}
   vertical: 0
-  controlID: 17253
+  controlID: 1744
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -299,8 +299,8 @@ MonoBehaviour:
     width: 1094
     height: 653
   m_PersistentViewDataDictionary: {fileID: 0}
-  m_MaximizeOnPlay: 1
-  m_Gizmos: 0
+  m_MaximizeOnPlay: 0
+  m_Gizmos: 1
   m_Stats: 0
   m_SelectedSizes: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
   m_TargetDisplay: 0
@@ -382,9 +382,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 14840000
-      m_LastClickedID: 33812
-      m_ExpandedIDs: 36e3b0ff54e3b0ffa6e4b0ff38c6baff56c6baffa8c7baffe447e7ffa839ecff200afbff3e0afbff900bfbffdefbffff763700001e820000b6820000
+      m_SelectedIDs: f4100000
+      m_LastClickedID: 4340
+      m_ExpandedIDs: defbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -471,7 +471,7 @@ MonoBehaviour:
   m_Rotation:
     m_Target: {x: 0.21641146, y: 0.5907461, z: -0.1684766, w: 0.75881535}
     speed: 2
-    m_Value: {x: 0.21641147, y: 0.59074616, z: -0.16847661, w: 0.7588154}
+    m_Value: {x: 0.21641146, y: 0.5907461, z: -0.1684766, w: 0.75881535}
   m_Size:
     m_Target: 9.474293
     speed: 2
@@ -551,20 +551,20 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scenes/prefab/bullet2
+    - Assets/Scenes/prefab
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scenes/prefab/bullet2
+  - Assets/Scenes/prefab
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\omely\New Unity Project
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 50}
-    m_SelectedIDs: 960c0000
-    m_LastClickedID: 3222
-    m_ExpandedIDs: 000000000a0a0000100a0000660a00006a0a0000b80a0000c00a00006a0b0000840c0000f00c00009e0d0000ce0d0000000e00004a2f00004c2f00004e2f0000502f0000522f000000ca9a3b
+    m_SelectedIDs: 6c0a0000
+    m_LastClickedID: 2668
+    m_ExpandedIDs: 000000000c0a0000120a0000680a00006c0a0000ba0a0000c20a00006c0b0000860c0000f20c0000a00d0000d00d0000020e0000462f0000482f00004a2f00004c2f00004e2f000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -592,7 +592,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000a0a0000100a0000660a00006a0a0000b80a0000c00a00006a0b0000840c0000f00c00009e0d0000ce0d0000000e00004a2f00004c2f00004e2f0000502f0000522f000000ca9a3b
+    m_ExpandedIDs: 000000000c0a0000120a0000680a00006c0a0000ba0a0000c20a00006c0b0000860c0000f20c0000a00d0000d00d0000020e0000462f0000482f00004a2f00004c2f00004e2f000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

@@ -165,7 +165,7 @@ public class controlObject : MonoBehaviour
 
         localAngularVelocity = transform.InverseTransformDirection(rb.angularVelocity) * Mathf.Rad2Deg; // deg / sec
 
-        rb.angularDrag = angularDragCoeff * rb.velocity.magnitude + 1f;
+        rb.angularDrag = 1f * angularDragCoeff * rb.velocity.magnitude + 1f;
 
         calcHP();
     }
@@ -228,6 +228,7 @@ public class controlObject : MonoBehaviour
         foreach (GameObject obj in Shared.hitWithBulletOrRocketObjects)
         {
             if (obj == gameObject) continue;
+            if (obj == cam.GetComponent<CameraOperate>().controlObject) continue;
 
             GameObject clone = Instantiate(prefabForShowInfo, Vector3.zero, Quaternion.identity, prefabForShowInfo.transform.parent.transform);
             clone.GetComponent<InfoNearObjClass>().gameObj = obj;
