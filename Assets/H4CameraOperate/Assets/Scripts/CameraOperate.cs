@@ -220,8 +220,8 @@ public class CameraOperate : MonoBehaviour
 
     void customCamLogic(Vector3 deltaPosition)
     {
-        float fwd = 6f;
-        float up = 1.0f;
+        float fwd = 8f;
+        float up = 1.5f;
         Vector3 camOffset = controlObject.transform.forward * fwd - Vector3.up * up;
 
         if (Input.GetMouseButton(1))

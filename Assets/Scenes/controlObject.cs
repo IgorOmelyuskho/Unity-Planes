@@ -142,6 +142,7 @@ public class controlObject : MonoBehaviour
         rb.inertiaTensor = tensor1 * rb.mass;
 
         shoot();
+
         showAimPoint();
 
         velocity = rb.velocity;
@@ -302,10 +303,13 @@ public class controlObject : MonoBehaviour
 
     void drawQuadAroundTarget()
     {
-        Vector3 screenPos = cam.WorldToScreenPoint(target.transform.position);
-        if (screenPos.z < 0) return; 
-        screenPos.z = 0;
-        rectTransformQuadAroundTarget.position = screenPos;
+        if (target)
+        {
+            Vector3 screenPos = cam.WorldToScreenPoint(target.transform.position);
+            if (screenPos.z < 0) return;
+            screenPos.z = 0;
+            rectTransformQuadAroundTarget.position = screenPos;
+        }
     }
 
     void drawArrowIfObjectOutsideScreens(Vector3 targetPosition, RectTransform pointerRectTransform)
@@ -351,24 +355,47 @@ public class controlObject : MonoBehaviour
         }
     }
 
+    // disable another controlObjects
     void showAimPoint()
     {
-        //foreach (GameObject hitWithBulletOrRocketObject in Shared.hitWithBulletOrRocketObjects)
-        //{
-        //    if (gameObject != hitWithBulletOrRocketObject)
-        //    {
-        //        target = hitWithBulletOrRocketObject;
-        //        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<Rigidbody>().velocity, transform.position, bullet.initBulletSpeed, rb.velocity);
-        //        lineRenderer.SetPosition(0, target.transform.position);
-        //        lineRenderer.SetPosition(1, aimPosition);
-        //        return;
-        //    }
-        //}
+        if (target)
+        {
+            Vector3 targetSpeed;
 
-        target = GameObject.FindGameObjectWithTag("TargetTag");
-        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<target>().calculatedSpeed, transform.position, bullet.initBulletSpeed, rb.velocity);
-        lineRenderer.SetPosition(0, target.transform.position);
-        lineRenderer.SetPosition(1, aimPosition);
+            if (target.GetComponent<Rigidbody>().velocity != null)
+                targetSpeed = target.GetComponent<Rigidbody>().velocity;
+            else if (target.GetComponent<target>().calculatedSpeed != null)
+                targetSpeed = target.GetComponent<target>().calculatedSpeed;
+            else
+                targetSpeed = Vector3.zero;
+
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity);
+            lineRenderer.SetPosition(0, target.transform.position);
+            lineRenderer.SetPosition(1, aimPosition);
+        }
+    }
+
+    void findNearestToScreenCenterObj()
+    {
+        GameObject[] objects = Shared.hitWithBulletOrRocketObjects;
+        GameObject closest = null;
+        float dot = -2;
+
+        foreach (GameObject obj in objects)
+        {
+            if (obj == gameObject) continue;
+
+            Vector3 localPoint = Camera.main.transform.InverseTransformPoint(obj.transform.position).normalized;
+            Vector3 forward = Vector3.forward;
+            float test = Vector3.Dot(localPoint, forward);
+            if (test > dot)
+            {
+                dot = test;
+                closest = obj;
+            }
+        }
+
+        target = closest;
     }
 
     void calcAttackAngle()
@@ -460,6 +487,9 @@ public class controlObject : MonoBehaviour
 
         if (Input.GetKey(KeyCode.D))
             rightRoll = true;
+
+        if (Input.GetKeyDown(KeyCode.C))
+            findNearestToScreenCenterObj();
 
         if (Input.GetKey(KeyCode.LeftShift) && power < 100)
             power += 2;
