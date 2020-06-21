@@ -38,7 +38,9 @@ public class controlObject : MonoBehaviour
 
     int counterForShoot;
 
-    public List<GameObject> infoNearObjList = new List<GameObject>();
+    List<GameObject> infoNearObjList = new List<GameObject>();
+
+    bool isPlayer; 
 
 
     // public
@@ -114,9 +116,25 @@ public class controlObject : MonoBehaviour
 
     void Start()
     {
+        //prefabForShowInfo = GameObject.Find("for show info near obj");
+        //UICam = GameObject.Find("UICamera").GetComponent<Camera>();
+        //hpBar = GameObject.Find("hpBar").GetComponent<Image>();
+        //rectTransformDirectionCircle = GameObject.Find("direction_circle").GetComponent<RectTransform>();
+        //rectTransformDirectionCircleArrow = GameObject.Find("direction_arrow").GetComponent<RectTransform>();
+        //rectTransformEnemyArrow = GameObject.Find("enemy_arrow").GetComponent<RectTransform>();
+        //rectTransformQuadAroundTarget = GameObject.Find("quad_around_target").GetComponent<RectTransform>();
+        //speedTextLabel = GameObject.Find("controlObjectSpeed").GetComponent<Text>();
+        //powerTextLabel = GameObject.Find("controlObjectPower").GetComponent<Text>();
+        //accelerationTextLabel = GameObject.Find("controlObjectAcceleration").GetComponent<Text>();
+        //maxAccelerationTextLabel = GameObject.Find("controlObjectMaxAcceleration").GetComponent<Text>();
+        //attackAngleTextLabel = GameObject.Find("controlObjectAttackAngle").GetComponent<Text>();
+        //altitudeTextLabel = GameObject.Find("controlObjectAltitude").GetComponent<Text>();
+        //tractionVectorControlTextLabel = GameObject.Find("controlObjectTractionVectorControl").GetComponent<Text>();
+
         //Cursor.lockState = CursorLockMode.Locked;
 
         cam = Camera.main;
+        isPlayer = cam.GetComponent<CameraOperate>().controlObject == gameObject;
 
         forwardDirection = GameObject.Find("direction_where_look_control_object").GetComponent<RectTransform>();
 
@@ -134,16 +152,19 @@ public class controlObject : MonoBehaviour
 
         lineRenderer.positionCount = 2;
 
-        prepareInfoNearObjArr();
+        if (isPlayer)
+            prepareInfoNearObjArr();
     }
 
     void FixedUpdate()
     {
         rb.inertiaTensor = tensor1 * rb.mass;
 
-        shoot();
-
-        showAimPoint();
+        if (isPlayer)
+        {
+            shoot();
+            showAimPoint();
+        }
 
         velocity = rb.velocity;
         velocityMaggnitude = rb.velocity.magnitude;
@@ -187,6 +208,8 @@ public class controlObject : MonoBehaviour
 
     void LateUpdate() // late update - not late fixed update
     {
+        if (!isPlayer) return;
+
         setAimAndDirectionCirclePosition();
         drawArrows();
         drawInfoNearObjects();
@@ -229,7 +252,6 @@ public class controlObject : MonoBehaviour
         foreach (GameObject obj in Shared.hitWithBulletOrRocketObjects)
         {
             if (obj == gameObject) continue;
-            if (obj == cam.GetComponent<CameraOperate>().controlObject) continue;
 
             GameObject clone = Instantiate(prefabForShowInfo, Vector3.zero, Quaternion.identity, prefabForShowInfo.transform.parent.transform);
             clone.GetComponent<InfoNearObjClass>().gameObj = obj;
@@ -408,7 +430,7 @@ public class controlObject : MonoBehaviour
         float gizmosSize = 5;
 
         Gizmos.color = Color.blue;
-        Gizmos.DrawRay(transform.position, transform.forward * gizmosSize * 1000);
+        Gizmos.DrawRay(transform.position, transform.forward * gizmosSize * 1);
 
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, transform.right * gizmosSize);
@@ -488,7 +510,7 @@ public class controlObject : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
             rightRoll = true;
 
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C) && isPlayer)
             findNearestToScreenCenterObj();
 
         if (Input.GetKey(KeyCode.LeftShift) && power < 100)
