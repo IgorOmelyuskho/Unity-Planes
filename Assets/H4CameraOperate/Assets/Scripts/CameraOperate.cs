@@ -222,7 +222,16 @@ public class CameraOperate : MonoBehaviour
     {
         float fwd = 15f;
         float up = 4f;
-        Vector3 camOffset = controlObject.transform.forward * fwd - Vector3.up * up;
+        Vector3 camOffset;
+
+        try
+        {
+            camOffset = controlObject.transform.forward * fwd - Vector3.up * up; // if rocket destroy
+        }
+        catch
+        {
+            return;
+        }
 
         if (Input.GetMouseButton(1))
         {

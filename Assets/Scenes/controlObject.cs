@@ -40,7 +40,12 @@ public class controlObject : MonoBehaviour
 
     List<GameObject> infoNearObjList = new List<GameObject>();
 
-    bool isPlayer; 
+    bool isLaunchedRocket = false; // use for rocket
+    GameObject rocketOwner; // use for rocket
+
+    GameObject lastLaunchedRocket;
+
+    bool isPlayer = false; 
 
 
     // public
@@ -49,6 +54,7 @@ public class controlObject : MonoBehaviour
     public Vector3 tensor1;
     public Rigidbody rb;
     public Bullet2 bullet;
+    public GameObject rocket;
     public Vector3 localAngularVelocity;
 
     public GameObject prefabForShowInfo;
@@ -116,20 +122,20 @@ public class controlObject : MonoBehaviour
 
     void Start()
     {
-        //prefabForShowInfo = GameObject.Find("for show info near obj");
-        //UICam = GameObject.Find("UICamera").GetComponent<Camera>();
-        //hpBar = GameObject.Find("hpBar").GetComponent<Image>();
-        //rectTransformDirectionCircle = GameObject.Find("direction_circle").GetComponent<RectTransform>();
-        //rectTransformDirectionCircleArrow = GameObject.Find("direction_arrow").GetComponent<RectTransform>();
-        //rectTransformEnemyArrow = GameObject.Find("enemy_arrow").GetComponent<RectTransform>();
-        //rectTransformQuadAroundTarget = GameObject.Find("quad_around_target").GetComponent<RectTransform>();
-        //speedTextLabel = GameObject.Find("controlObjectSpeed").GetComponent<Text>();
-        //powerTextLabel = GameObject.Find("controlObjectPower").GetComponent<Text>();
-        //accelerationTextLabel = GameObject.Find("controlObjectAcceleration").GetComponent<Text>();
-        //maxAccelerationTextLabel = GameObject.Find("controlObjectMaxAcceleration").GetComponent<Text>();
-        //attackAngleTextLabel = GameObject.Find("controlObjectAttackAngle").GetComponent<Text>();
-        //altitudeTextLabel = GameObject.Find("controlObjectAltitude").GetComponent<Text>();
-        //tractionVectorControlTextLabel = GameObject.Find("controlObjectTractionVectorControl").GetComponent<Text>();
+        prefabForShowInfo = GameObject.Find("for show info near obj");
+        UICam = GameObject.Find("UICamera").GetComponent<Camera>();
+        hpBar = GameObject.Find("hpBar").GetComponent<Image>();
+        rectTransformDirectionCircle = GameObject.Find("direction_circle").GetComponent<RectTransform>();
+        rectTransformDirectionCircleArrow = GameObject.Find("direction_arrow").GetComponent<RectTransform>();
+        rectTransformEnemyArrow = GameObject.Find("enemy_arrow").GetComponent<RectTransform>();
+        rectTransformQuadAroundTarget = GameObject.Find("quad_around_target").GetComponent<RectTransform>();
+        speedTextLabel = GameObject.Find("controlObjectSpeed").GetComponent<Text>();
+        powerTextLabel = GameObject.Find("controlObjectPower").GetComponent<Text>();
+        accelerationTextLabel = GameObject.Find("controlObjectAcceleration").GetComponent<Text>();
+        maxAccelerationTextLabel = GameObject.Find("controlObjectMaxAcceleration").GetComponent<Text>();
+        attackAngleTextLabel = GameObject.Find("controlObjectAttackAngle").GetComponent<Text>();
+        altitudeTextLabel = GameObject.Find("controlObjectAltitude").GetComponent<Text>();
+        tractionVectorControlTextLabel = GameObject.Find("controlObjectTractionVectorControl").GetComponent<Text>();
 
         //Cursor.lockState = CursorLockMode.Locked;
 
@@ -141,7 +147,8 @@ public class controlObject : MonoBehaviour
         rectTransformDirectionCircle.position = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
         rb = GetComponent<Rigidbody>();
-        rb.velocity = transform.forward * initSpeed;
+        if (!isLaunchedRocket)
+            rb.velocity = transform.forward * initSpeed;
         prevVelocity = rb.velocity;
         rb.maxAngularVelocity = 20;
         rb.inertiaTensor = tensor1 * rb.mass;
@@ -189,6 +196,8 @@ public class controlObject : MonoBehaviour
 
         rb.angularDrag = 1f * angularDragCoeff * rb.velocity.magnitude + 1f;
 
+        destroyIfTargetNear();
+
         calcHP();
     }
 
@@ -199,7 +208,20 @@ public class controlObject : MonoBehaviour
         //drawCorpusForces();
         //drawWingForces();
         //drawEngineForce();
-        handleKeyInput();
+
+        if (!isLaunchedRocket)
+            handleKeyInput(); // for bot can turn
+
+        if (isPlayer)
+        {
+            launchRocket();
+            //handleKeyInput(); // for bot can not turn
+        }
+
+        if (isPlayer && Input.GetKey(KeyCode.U) && lastLaunchedRocket)
+            cam.GetComponent<CameraOperate>().controlObject = lastLaunchedRocket;
+        else if (isPlayer)
+            cam.GetComponent<CameraOperate>().controlObject = gameObject;
     }
 
     void OnGUI()
@@ -279,7 +301,8 @@ public class controlObject : MonoBehaviour
 
             // hp
             Image hpBar = obj.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>();
-            hpBar.fillAmount = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().hp / 100;
+            if (obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>() != null)
+                hpBar.fillAmount = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().hp / 100;
         }
     }
 
@@ -374,6 +397,57 @@ public class controlObject : MonoBehaviour
             Bullet2 bulletClone = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * 1, transform.rotation);
             bulletClone.speed = bulletClone.initBulletSpeed * new Vector3(transform.forward.x, transform.forward.y, transform.forward.z) + rb.velocity;
             bulletClone.owner = gameObject;
+        }
+    }
+
+    void launchRocket()
+    {
+        if (Input.GetKeyDown(KeyCode.Z) && target)
+        {
+            GameObject rocketClone = Instantiate(rocket, new Vector3(transform.position.x, transform.position.y, transform.position.z) - transform.up * 1.0f, transform.rotation);
+            lastLaunchedRocket = rocketClone;
+            rocketClone.GetComponent<controlObject>().isLaunchedRocket = true;
+            rocketClone.GetComponent<controlObject>().rb.velocity = rb.velocity;
+            rocketClone.GetComponent<controlObject>().target = target;
+            rocketClone.GetComponent<controlObject>().rocketOwner = gameObject;
+        }
+    }
+
+    void destroyIfTargetNear()
+    {
+        if (isLaunchedRocket && target)
+        {
+            Vector3 forward = transform.TransformDirection(rb.velocity);
+            Vector3 toOther = target.transform.position - transform.position;
+
+            float distWhenRocketHitTarget = 20;
+
+            if (/*Vector3.Dot(forward, toOther) < 0 && */ Vector3.Distance(transform.position, target.transform.position) < distWhenRocketHitTarget) // todo
+            {
+                int iterationCt = 4;
+                float minDistance = 1000;
+
+                for (var j = 0; j < iterationCt; j++) 
+                {
+                    Vector3 rocketPosition = transform.position + (rb.velocity.magnitude / iterationCt) * rb.velocity.normalized * j * Time.fixedDeltaTime;
+                    float distance = Vector3.Distance(rocketPosition, target.transform.position);
+                    if (distance < minDistance)
+                        minDistance = distance;
+                }
+
+                print(minDistance);
+                float damage;
+                if (minDistance > distWhenRocketHitTarget)
+                    damage = 0;
+                else
+                    damage = (20 - minDistance) * 5;
+
+                if (isPlayer)
+                    cam.GetComponent<CameraOperate>().controlObject = gameObject;
+
+                target.GetComponent<controlObject>().hp -= damage;
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -557,12 +631,27 @@ public class controlObject : MonoBehaviour
         }
     }
 
-    void rotateControlPlaneByMouse()
+    void rotateControlPlaneByMouse() // use for rocket aiming too (not only rotate by mouse)
     {
-        Vector3 directionCircleDir = directionCircleInWorldWorldPosition - transform.position;
+        float yAngleBetweenForwardAndDirectionCircle;
+        float xAngleBetweenForwardAndDirectionCircle;
 
-        float yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.up, true);
-        float xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
+        if (isLaunchedRocket && target)
+        {
+            // show aimPosition
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, bullet.initBulletSpeed, rb.velocity);
+            Vector3 direction = aimPosition - transform.position;
+            //yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
+            //xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.right, true);
+            yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.up, true);
+            xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.right, true);
+        }
+        else
+        {
+            Vector3 directionCircleDir = directionCircleInWorldWorldPosition - transform.position;
+            yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.up, true);
+            xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
+        }
 
         float PDUpDownResult = Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
         float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
