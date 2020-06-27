@@ -237,13 +237,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackAngle: 0
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 1.1
   distForAddAileronForce: 0
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 1148350815824479749}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
   rocket: {fileID: 0}
-  localAngularVelocity: {x: 0, y: 0, z: 0}
   prefabForShowInfo: {fileID: 0}
   lineRenderer: {fileID: 1148350815824479748}
   UICam: {fileID: 0}
@@ -270,8 +271,8 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 1
   hp: 100
-  tractionVectorControlCoeff: 0.75
-  maxControlPlaneAngle: 45
+  tractionVectorControlCoeff: 0.5
+  maxControlPlaneAngle: 75
   maxControlPlaneRotationSpeed: 5
   engineThrustCoeff: 150
   engineThrustKG: 0
@@ -286,10 +287,10 @@ MonoBehaviour:
   forwardWingDragCoeff: 0
   angularDragCoeff: 0.02
   controlPlaneDragEngineWindCoeff: 0
-  pCoeffLeftRight: 2
-  dCoeffLeftRight: 0.02
-  pCoeffUpDown: 2
-  dCoeffUpDown: 0.02
+  pCoeffLeftRight: 5
+  dCoeffLeftRight: 0.04
+  pCoeffUpDown: 5
+  dCoeffUpDown: 0.04
 --- !u!1 &1148350816194947969
 GameObject:
   m_ObjectHideFlags: 0

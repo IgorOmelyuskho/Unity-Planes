@@ -122,9 +122,9 @@ public class Shared
                 float.IsNaN(targetingPosition.x) ||
                 float.IsNaN(targetingPosition.y) ||
                 float.IsNaN(targetingPosition.z) ||
-                targetingPosition.x > 50000 ||
-                targetingPosition.y > 50000 ||
-                targetingPosition.z > 50000
+                targetingPosition.x > 5000000 ||
+                targetingPosition.y > 5000000 ||
+                targetingPosition.z > 5000000
                )
             {
                 return targetPosition;

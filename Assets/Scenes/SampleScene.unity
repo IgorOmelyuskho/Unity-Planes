@@ -2033,13 +2033,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 9
   distForAddAileronForce: 2.9
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 588015672}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
   rocket: {fileID: 0}
-  localAngularVelocity: {x: 0, y: 0, z: 0}
   prefabForShowInfo: {fileID: 525918521}
   lineRenderer: {fileID: 588015673}
   UICam: {fileID: 1351212433}
@@ -2098,7 +2098,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -2204,8 +2204,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 588015670}
-  m_LocalRotation: {x: 0.018324912, y: 0, z: 0, w: 0.9998321}
-  m_LocalPosition: {x: -3785, y: 17.78, z: 820}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -4500, y: 5.41, z: 4500}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1097166961}
@@ -2215,7 +2215,7 @@ Transform:
   - {fileID: 162403945}
   m_Father: {fileID: 0}
   m_RootOrder: 15
-  m_LocalEulerAnglesHint: {x: 2.1, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &591313178
 GameObject:
   m_ObjectHideFlags: 0
@@ -5915,13 +5915,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 9
   distForAddAileronForce: 2.9
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 1469863175}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
   rocket: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5, type: 3}
-  localAngularVelocity: {x: 0, y: 0, z: 0}
   prefabForShowInfo: {fileID: 525918521}
   lineRenderer: {fileID: 1469863176}
   UICam: {fileID: 1351212433}
@@ -6086,8 +6086,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1469863173}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -2971.8, y: 17.78, z: 5000}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 150, y: 17.78, z: 48.97}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1347451382}
@@ -6097,7 +6097,7 @@ Transform:
   - {fileID: 516316241}
   m_Father: {fileID: 0}
   m_RootOrder: 17
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1471560547
 GameObject:
   m_ObjectHideFlags: 0
@@ -6697,13 +6697,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 9
   distForAddAileronForce: 2.9
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 1639650591}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
   rocket: {fileID: 0}
-  localAngularVelocity: {x: 0, y: 0, z: 0}
   prefabForShowInfo: {fileID: 525918521}
   lineRenderer: {fileID: 1639650592}
   UICam: {fileID: 1351212433}
@@ -6868,8 +6868,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639650589}
-  m_LocalRotation: {x: 0.017579343, y: -0.28229403, z: 0.005173882, w: 0.9591529}
-  m_LocalPosition: {x: -2815, y: 17.78, z: 303}
+  m_LocalRotation: {x: 0.018324912, y: 0, z: 0, w: 0.9998321}
+  m_LocalPosition: {x: 0, y: 17.78, z: 303}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 591313179}
@@ -6879,7 +6879,7 @@ Transform:
   - {fileID: 42850469}
   m_Father: {fileID: 0}
   m_RootOrder: 16
-  m_LocalEulerAnglesHint: {x: 2.1, y: -32.8, z: 0}
+  m_LocalEulerAnglesHint: {x: 2.1, y: 0, z: 0}
 --- !u!1 &1675879523
 GameObject:
   m_ObjectHideFlags: 0
@@ -7409,13 +7409,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 9
   distForAddAileronForce: 2.9
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 1901476848}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
   rocket: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5, type: 3}
-  localAngularVelocity: {x: 0, y: 0, z: 0}
   prefabForShowInfo: {fileID: 525918521}
   lineRenderer: {fileID: 1901476849}
   UICam: {fileID: 1351212433}
@@ -7581,7 +7581,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901476846}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3000, y: 17.78, z: 58.4}
+  m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1698825972}
@@ -9405,6 +9405,36 @@ PrefabInstance:
         type: 3}
       propertyPath: tractionVectorControlEnabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: initSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: dCoeffLeftRight
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: dCoeffUpDown
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: pCoeffLeftRight
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: pCoeffUpDown
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: tractionVectorControlCoeff
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5,
         type: 3}

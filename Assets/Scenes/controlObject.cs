@@ -45,17 +45,17 @@ public class controlObject : MonoBehaviour
 
     GameObject lastLaunchedRocket;
 
-    bool isPlayer = false; 
+    bool isPlayer = false;
 
 
     // public
+    public Vector3 localAngularVelocity;
     public float distForAddControlPlaneOrEngineForce;
     public float distForAddAileronForce;
     public Vector3 tensor1;
     public Rigidbody rb;
     public Bullet2 bullet;
     public GameObject rocket;
-    public Vector3 localAngularVelocity;
 
     public GameObject prefabForShowInfo;
 
@@ -208,6 +208,9 @@ public class controlObject : MonoBehaviour
         //drawCorpusForces();
         //drawWingForces();
         //drawEngineForce();
+
+        if (isLaunchedRocket)
+            drawAimPosForRocket();
 
         if (!isLaunchedRocket)
             handleKeyInput(); // for bot can turn
@@ -422,20 +425,23 @@ public class controlObject : MonoBehaviour
 
             float distWhenRocketHitTarget = 20;
 
-            if (/*Vector3.Dot(forward, toOther) < 0 && */ Vector3.Distance(transform.position, target.transform.position) < distWhenRocketHitTarget) // todo
+            float angle = Vector3.Angle(target.transform.position - transform.position, rb.velocity);
+
+            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 110 && Vector3.Distance(transform.position, target.transform.position) < 1000 ||
+                Vector3.Distance(transform.position, target.transform.position) < distWhenRocketHitTarget) 
             {
                 int iterationCt = 4;
                 float minDistance = 1000;
 
-                for (var j = 0; j < iterationCt; j++) 
+                for (var j = 0; j < iterationCt; j++)
                 {
                     Vector3 rocketPosition = transform.position + (rb.velocity.magnitude / iterationCt) * rb.velocity.normalized * j * Time.fixedDeltaTime;
                     float distance = Vector3.Distance(rocketPosition, target.transform.position);
                     if (distance < minDistance)
                         minDistance = distance;
                 }
+                //minDistance = Vector3.Distance(transform.position, target.transform.position);
 
-                print(minDistance);
                 float damage;
                 if (minDistance > distWhenRocketHitTarget)
                     damage = 0;
@@ -639,10 +645,12 @@ public class controlObject : MonoBehaviour
         if (isLaunchedRocket && target)
         {
             // show aimPosition
-            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, bullet.initBulletSpeed, rb.velocity);
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
             Vector3 direction = aimPosition - transform.position;
+
             //yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
             //xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.right, true);
+
             yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.up, true);
             xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.right, true);
         }
@@ -656,8 +664,14 @@ public class controlObject : MonoBehaviour
         float PDUpDownResult = Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
         float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
 
+        // so that at high speeds it does not shake
         PDUpDownResult *= 1 - (rb.velocity.magnitude / 2000);
         PDLrftRightResult *= 1 - (rb.velocity.magnitude / 2000);
+
+        // so that the rocket does not spin in place
+        PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.1f + Mathf.Abs(localAngularVelocity.x) * 1.5f /*+ xAngleBetweenForwardAndDirectionCircle * 1.5f*/) / 350);
+        PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.1f + Mathf.Abs(localAngularVelocity.y) * 1.5f/* + yAngleBetweenForwardAndDirectionCircle * 1.5f*/) / 350);
+        //PDLrftRightResult = 0;
 
         float upDownTargetAngle = Mathf.Clamp(PDUpDownResult, -maxControlPlaneAngle, maxControlPlaneAngle);
         float leftRightTargetAngle = Mathf.Clamp(PDLrftRightResult, -maxControlPlaneAngle, maxControlPlaneAngle);
@@ -696,6 +710,11 @@ public class controlObject : MonoBehaviour
             else
                 leftRight.transform.localRotation = Quaternion.Euler(0, leftRightTargetAngle, 0);
         }
+
+        //if (!isPlayer && !isLaunchedRocket) // bots rotate left
+        //{
+        //    leftRight.transform.localRotation = Quaternion.Euler(0, 25, 0);
+        //}
     }
 
     void addEngineForce()
@@ -901,6 +920,13 @@ public class controlObject : MonoBehaviour
             force = 5 * transform.forward;
 
         UnityEngine.Debug.DrawLine(positionForAddForce, positionForAddForce + force, Color.magenta);
+    }
+
+    void drawAimPosForRocket()
+    {
+        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
+
+        UnityEngine.Debug.DrawLine(transform.position, aimPosition, Color.yellow);
     }
 
 
