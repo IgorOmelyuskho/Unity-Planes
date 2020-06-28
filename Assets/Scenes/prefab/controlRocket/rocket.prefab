@@ -237,7 +237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackAngle: 0
   localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 1.1
   distForAddAileronForce: 0
@@ -271,7 +270,7 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 1
   hp: 100
-  tractionVectorControlCoeff: 0.5
+  tractionVectorControlCoeff: 0.2
   maxControlPlaneAngle: 75
   maxControlPlaneRotationSpeed: 5
   engineThrustCoeff: 150
@@ -287,10 +286,10 @@ MonoBehaviour:
   forwardWingDragCoeff: 0
   angularDragCoeff: 0.02
   controlPlaneDragEngineWindCoeff: 0
-  pCoeffLeftRight: 5
-  dCoeffLeftRight: 0.04
-  pCoeffUpDown: 5
-  dCoeffUpDown: 0.04
+  pCoeffLeftRight: 7
+  dCoeffLeftRight: 0.09
+  pCoeffUpDown: 7
+  dCoeffUpDown: 0.09
 --- !u!1 &1148350816194947969
 GameObject:
   m_ObjectHideFlags: 0

@@ -127,7 +127,7 @@ public class Shared
                 targetingPosition.z > 5000000
                )
             {
-                return targetPosition;
+                return targetPosition + targetSpeed * 100000;
             }
         }
 

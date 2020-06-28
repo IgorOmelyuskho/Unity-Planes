@@ -140,7 +140,10 @@ public class controlObject : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
 
         cam = Camera.main;
-        isPlayer = cam.GetComponent<CameraOperate>().controlObject == gameObject;
+        if (cam.GetComponent<CameraOperate>().controlObject == gameObject && rocketOwner == null) // rocketOwner == null bug if press U untill launch rocket
+            isPlayer = true;
+        else
+            isPlayer = false;
 
         forwardDirection = GameObject.Find("direction_where_look_control_object").GetComponent<RectTransform>();
 
@@ -427,7 +430,7 @@ public class controlObject : MonoBehaviour
 
             float angle = Vector3.Angle(target.transform.position - transform.position, rb.velocity);
 
-            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 110 && Vector3.Distance(transform.position, target.transform.position) < 1000 ||
+            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 120 && Vector3.Distance(transform.position, target.transform.position) < 1000 ||
                 Vector3.Distance(transform.position, target.transform.position) < distWhenRocketHitTarget) 
             {
                 int iterationCt = 4;
@@ -642,10 +645,12 @@ public class controlObject : MonoBehaviour
         float yAngleBetweenForwardAndDirectionCircle;
         float xAngleBetweenForwardAndDirectionCircle;
 
+        Vector3 aimPosition = Vector3.zero;
+
         if (isLaunchedRocket && target)
         {
             // show aimPosition
-            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
+            aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
             Vector3 direction = aimPosition - transform.position;
 
             //yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
@@ -661,7 +666,7 @@ public class controlObject : MonoBehaviour
             xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
         }
 
-        float PDUpDownResult = Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
+        float PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
         float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
 
         // so that at high speeds it does not shake
@@ -669,9 +674,22 @@ public class controlObject : MonoBehaviour
         PDLrftRightResult *= 1 - (rb.velocity.magnitude / 2000);
 
         // so that the rocket does not spin in place
-        PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.1f + Mathf.Abs(localAngularVelocity.x) * 1.5f /*+ xAngleBetweenForwardAndDirectionCircle * 1.5f*/) / 350);
-        PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.1f + Mathf.Abs(localAngularVelocity.y) * 1.5f/* + yAngleBetweenForwardAndDirectionCircle * 1.5f*/) / 350);
-        //PDLrftRightResult = 0;
+        if (isLaunchedRocket && target)
+        {
+            PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
+            PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
+
+            if (Vector3.Distance(transform.position, aimPosition) > 4000)
+            {
+                PDUpDownResult *= 0.2f;
+                PDLrftRightResult *= 0.2f;
+            }
+            else
+            {
+                PDUpDownResult    *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
+                PDLrftRightResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
+            }
+        }       
 
         float upDownTargetAngle = Mathf.Clamp(PDUpDownResult, -maxControlPlaneAngle, maxControlPlaneAngle);
         float leftRightTargetAngle = Mathf.Clamp(PDLrftRightResult, -maxControlPlaneAngle, maxControlPlaneAngle);
