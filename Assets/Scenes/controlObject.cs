@@ -28,8 +28,6 @@ public class controlObject : MonoBehaviour
     float timePressUp = 0;
     float timePressDown = 0;
 
-    GameObject target;
-
     Vector3 actualAcceleration;
     float maxAcceleration;
 
@@ -38,17 +36,18 @@ public class controlObject : MonoBehaviour
 
     int counterForShoot;
 
-    List<GameObject> infoNearObjList = new List<GameObject>();
+    List<GameObject> infoNearObjList = new List<GameObject>(); // list of cloned prefabs
 
-    bool isLaunchedRocket = false; // use for rocket
     GameObject rocketOwner; // use for rocket
 
     GameObject lastLaunchedRocket;
 
     bool isPlayer = false;
 
-
     // public
+    public bool isLaunchedRocket = false; // use for rocket, public for use in rocketLauncher script
+    public GameObject target; // public for use in rocketLauncher script
+
     public Vector3 localAngularVelocity;
     public float distForAddControlPlaneOrEngineForce;
     public float distForAddAileronForce;
@@ -140,8 +139,10 @@ public class controlObject : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
 
         cam = Camera.main;
-        if (cam.GetComponent<CameraOperate>().controlObject == gameObject && rocketOwner == null) // rocketOwner == null bug if press U untill launch rocket
+        if (cam.GetComponent<CameraOperate>().controlObject == gameObject && rocketOwner == null) { // rocketOwner == null - because bug if press U untill launch rocket
             isPlayer = true;
+            Shared.player = gameObject;
+        }
         else
             isPlayer = false;
 
@@ -174,6 +175,7 @@ public class controlObject : MonoBehaviour
         {
             shoot();
             showAimPoint();
+            calcHP();
         }
 
         velocity = rb.velocity;
@@ -199,9 +201,8 @@ public class controlObject : MonoBehaviour
 
         rb.angularDrag = 1f * angularDragCoeff * rb.velocity.magnitude + 1f;
 
+        // use for launchedRocket
         destroyIfTargetNear();
-
-        calcHP();
     }
 
     void Update()
@@ -287,7 +288,7 @@ public class controlObject : MonoBehaviour
         }
     }
 
-    void addObjToInfoNearObjList(GameObject obj)
+    public void addObjToInfoNearObjList(GameObject obj) // public for use in rocketLauncher script
     {
         GameObject clone = Instantiate(prefabForShowInfo, Vector3.zero, Quaternion.identity, prefabForShowInfo.transform.parent.transform);
         clone.GetComponent<InfoNearObjClass>().gameObj = obj;
@@ -397,6 +398,10 @@ public class controlObject : MonoBehaviour
             screenPos.z = 0;
             rectTransformQuadAroundTarget.position = screenPos;
         }
+        else
+        {
+            rectTransformQuadAroundTarget.position = new Vector3(3000, 3000, 0);
+        }
     }
 
     void drawArrowIfObjectOutsideScreens(Vector3 targetPosition, RectTransform pointerRectTransform)
@@ -471,7 +476,7 @@ public class controlObject : MonoBehaviour
 
             float angle = Vector3.Angle(target.transform.position - transform.position, rb.velocity);
 
-            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 120 && Vector3.Distance(transform.position, target.transform.position) < 1000 ||
+            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 120 && Vector3.Distance(transform.position, target.transform.position) < 100 ||
                 Vector3.Distance(transform.position, target.transform.position) < distWhenRocketHitTarget) 
             {
                 int iterationCt = 4;

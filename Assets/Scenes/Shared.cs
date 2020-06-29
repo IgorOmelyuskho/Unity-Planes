@@ -61,6 +61,7 @@ public class Shared
     public const int deltaAngle = 10;
     static public AngleCoords[] angleArr;
     static public List<GameObject> hitWithBulletOrRocketObjects = new List<GameObject>();
+    static public GameObject player;
 
     static Shared()
     {

@@ -32,19 +32,23 @@ public class Bullet2 : MonoBehaviour
         {
             if (hitWithBulletOrRocketObject == owner) continue;
 
-            if ((transform.position - hitWithBulletOrRocketObject.transform.position).magnitude < initBulletSpeed * Time.deltaTime)
+            try
             {
-                for (var j = 0; j < iterationCt; j++)
+                if ((transform.position - hitWithBulletOrRocketObject.transform.position).magnitude < initBulletSpeed * Time.fixedDeltaTime)
                 {
-                    Vector3 buulletPosition = transform.position + (speedMagnitude / iterationCt) * speed.normalized * j * Time.fixedDeltaTime;
-                    if ((buulletPosition - hitWithBulletOrRocketObject.transform.position).magnitude < distWhenBulletHitTarget)
+                    for (var j = 0; j < iterationCt; j++)
                     {
-                        Destroy(gameObject);
-                        hitWithBulletOrRocketObject.GetComponent<controlObject>().hp -= hpHit;
-                        break;
+                        Vector3 buulletPosition = transform.position + (speedMagnitude / iterationCt) * speed.normalized * j * Time.fixedDeltaTime;
+                        if ((buulletPosition - hitWithBulletOrRocketObject.transform.position).magnitude < distWhenBulletHitTarget)
+                        {
+                            Destroy(gameObject);
+                            hitWithBulletOrRocketObject.GetComponent<controlObject>().hp -= hpHit;
+                            break;
+                        }
                     }
                 }
             }
+            catch { } // remove in findNearestToScreenCenterObj
         }
 
         if (i > 1000)
