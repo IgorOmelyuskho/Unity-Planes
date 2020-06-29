@@ -60,7 +60,7 @@ public class Shared
     static public float speed = 100;
     public const int deltaAngle = 10;
     static public AngleCoords[] angleArr;
-    static public GameObject[] hitWithBulletOrRocketObjects;
+    static public List<GameObject> hitWithBulletOrRocketObjects = new List<GameObject>();
 
     static Shared()
     {
@@ -78,7 +78,7 @@ public class Shared
             //angleArrArrIndex++;
         }
 
-        hitWithBulletOrRocketObjects = GameObject.FindGameObjectsWithTag("hitWithBulletOrRocket");
+        hitWithBulletOrRocketObjects = GameObject.FindGameObjectsWithTag("hitWithBulletOrRocket").OfType<GameObject>().ToList();
     }
 
     public static float GetSignedAngle(Quaternion A, Quaternion B, Vector3 axis)

@@ -287,29 +287,65 @@ public class controlObject : MonoBehaviour
         }
     }
 
+    void addObjToInfoNearObjList(GameObject obj)
+    {
+        GameObject clone = Instantiate(prefabForShowInfo, Vector3.zero, Quaternion.identity, prefabForShowInfo.transform.parent.transform);
+        clone.GetComponent<InfoNearObjClass>().gameObj = obj;
+        infoNearObjList.Add(clone);
+    }
+
     void drawInfoNearObjects()
     {
+        List<GameObject> objListForRemove = new List<GameObject>();
+
         foreach (GameObject obj in infoNearObjList)
         {
-            Vector3 wrapObjPosition = Camera.main.WorldToScreenPoint(obj.GetComponent<InfoNearObjClass>().gameObj.transform.position);
-            GameObject textForDist = obj.transform.GetChild(0).gameObject;
-
-            var dist = Vector3.Distance(cam.transform.position, obj.GetComponent<InfoNearObjClass>().gameObj.transform.position);
-            textForDist.GetComponent<Text>().text = dist.ToString("0");
-
-            if (wrapObjPosition.z > 0)
+            try
             {
-                wrapObjPosition.z = 0;
-                obj.GetComponent<RectTransform>().transform.position = wrapObjPosition;
-            }
-            else
-                obj.GetComponent<RectTransform>().transform.position = new Vector3(3000, 0, 0);
+                Color textColor = Color.blue;
+                if (obj.GetComponent<InfoNearObjClass>().gameObj == target)
+                    textColor = Color.red;
 
-            // hp
-            Image hpBar = obj.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>();
-            if (obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>() != null)
-                hpBar.fillAmount = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().hp / 100;
+                Vector3 wrapObjPosition = Camera.main.WorldToScreenPoint(obj.GetComponent<InfoNearObjClass>().gameObj.transform.position);
+
+                GameObject textForDist = obj.transform.GetChild(0).gameObject;
+                float dist = Vector3.Distance(cam.transform.position, obj.GetComponent<InfoNearObjClass>().gameObj.transform.position);
+                textForDist.GetComponent<Text>().color = textColor;
+                textForDist.GetComponent<Text>().text = "dist: " + dist.ToString("0");
+
+                GameObject textForVelocity = obj.transform.GetChild(2).gameObject;
+                float velocity = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().rb.velocity.magnitude * 3.6f;
+                textForVelocity.GetComponent<Text>().color = textColor;
+                textForVelocity.GetComponent<Text>().text = "spd: " + velocity.ToString("0");
+
+                GameObject textForAcceleration = obj.transform.GetChild(3).gameObject;
+                float acceleration = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().actualAcceleration.magnitude / Physics.gravity.magnitude;
+                textForAcceleration.GetComponent<Text>().color = textColor;
+                textForAcceleration.GetComponent<Text>().text = "acc: " + acceleration.ToString("0");
+
+                if (wrapObjPosition.z > 0)
+                {
+                    wrapObjPosition.z = 0;
+                    obj.GetComponent<RectTransform>().transform.position = wrapObjPosition;
+                }
+                else
+                    obj.GetComponent<RectTransform>().transform.position = new Vector3(3000, 0, 0);
+
+                // hp
+                Image hpBar = obj.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.GetComponent<Image>();
+                if (obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>() != null)
+                    hpBar.fillAmount = obj.GetComponent<InfoNearObjClass>().gameObj.GetComponent<controlObject>().hp / 100;
+            }
+            catch
+            {
+                objListForRemove.Add(obj);
+            }
         }
+
+        foreach (GameObject obj in objListForRemove)
+            Destroy(obj);
+
+        infoNearObjList.RemoveAll(objListForRemove.Contains);
     }
 
     void setAimAndDirectionCirclePosition()
@@ -416,11 +452,16 @@ public class controlObject : MonoBehaviour
             rocketClone.GetComponent<controlObject>().rb.velocity = rb.velocity;
             rocketClone.GetComponent<controlObject>().target = target;
             rocketClone.GetComponent<controlObject>().rocketOwner = gameObject;
+            addObjToInfoNearObjList(rocketClone);
+            Shared.hitWithBulletOrRocketObjects.Add(rocketClone);
         }
     }
 
     void destroyIfTargetNear()
     {
+        if (isLaunchedRocket && !target)
+            Destroy(gameObject);
+
         if (isLaunchedRocket && target)
         {
             Vector3 forward = transform.TransformDirection(rb.velocity);
@@ -482,23 +523,32 @@ public class controlObject : MonoBehaviour
 
     void findNearestToScreenCenterObj()
     {
-        GameObject[] objects = Shared.hitWithBulletOrRocketObjects;
         GameObject closest = null;
         float dot = -2;
+        List<GameObject> objListForRemove = new List<GameObject>();
 
-        foreach (GameObject obj in objects)
+        foreach (GameObject obj in Shared.hitWithBulletOrRocketObjects)
         {
             if (obj == gameObject) continue;
 
-            Vector3 localPoint = Camera.main.transform.InverseTransformPoint(obj.transform.position).normalized;
-            Vector3 forward = Vector3.forward;
-            float test = Vector3.Dot(localPoint, forward);
-            if (test > dot)
+            try
             {
-                dot = test;
-                closest = obj;
+                Vector3 localPoint = Camera.main.transform.InverseTransformPoint(obj.transform.position).normalized;
+                Vector3 forward = Vector3.forward;
+                float test = Vector3.Dot(localPoint, forward);
+                if (test > dot)
+                {
+                    dot = test;
+                    closest = obj;
+                }
+            }
+            catch
+            {
+                objListForRemove.Add(obj);
             }
         }
+
+        Shared.hitWithBulletOrRocketObjects.RemoveAll(objListForRemove.Contains);
 
         target = closest;
     }
@@ -942,9 +992,11 @@ public class controlObject : MonoBehaviour
 
     void drawAimPosForRocket()
     {
-        Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
-
-        UnityEngine.Debug.DrawLine(transform.position, aimPosition, Color.yellow);
+        if (target)
+        {
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
+            UnityEngine.Debug.DrawLine(transform.position, aimPosition, Color.yellow);
+        }
     }
 
 
