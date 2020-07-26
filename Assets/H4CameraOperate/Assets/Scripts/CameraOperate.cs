@@ -220,8 +220,8 @@ public class CameraOperate : MonoBehaviour
 
     void customCamLogic(Vector3 deltaPosition)
     {
-        float fwd = 15f;
-        float up = 4f;
+        float fwd = 19f;
+        float up = 5f;
         Vector3 camOffset;
 
         try

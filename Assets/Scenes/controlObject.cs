@@ -44,7 +44,10 @@ public class controlObject : MonoBehaviour
 
     bool isPlayer = false;
 
+    GameObject prefabForExplosion;
+
     // public
+
     public bool isLaunchedRocket = false; // use for rocket, public for use in rocketLauncher script
     public GameObject target; // public for use in rocketLauncher script
 
@@ -465,7 +468,7 @@ public class controlObject : MonoBehaviour
     void destroyIfTargetNear()
     {
         if (isLaunchedRocket && !target)
-            Destroy(gameObject);
+            destroyLaunchedRocket();
 
         if (isLaunchedRocket && target)
         {
@@ -501,9 +504,17 @@ public class controlObject : MonoBehaviour
                     cam.GetComponent<CameraOperate>().controlObject = gameObject;
 
                 target.GetComponent<controlObject>().hp -= damage;
-                Destroy(gameObject);
+                destroyLaunchedRocket();
             }
         }
+    }
+
+    void destroyLaunchedRocket()
+    {
+        prefabForExplosion = GameObject.Find("Explosion");
+        GameObject cloneExplosion = Instantiate(prefabForExplosion, gameObject.transform.position, Quaternion.identity);
+        Destroy(gameObject);
+        Destroy(cloneExplosion, 5);
     }
 
     // disable another controlObjects
@@ -524,36 +535,32 @@ public class controlObject : MonoBehaviour
             lineRenderer.SetPosition(0, target.transform.position);
             lineRenderer.SetPosition(1, aimPosition);
         }
+        else
+        {
+            lineRenderer.SetPosition(0, Vector3.zero);
+            lineRenderer.SetPosition(1, Vector3.zero);
+        }
     }
 
     void findNearestToScreenCenterObj()
     {
         GameObject closest = null;
         float dot = -2;
-        List<GameObject> objListForRemove = new List<GameObject>();
 
         foreach (GameObject obj in Shared.hitWithBulletOrRocketObjects)
         {
-            if (obj == gameObject) continue;
+            if (obj == gameObject || !obj) continue;
 
-            try
+            Vector3 localPoint = Camera.main.transform.InverseTransformPoint(obj.transform.position).normalized;
+            Vector3 forward = Vector3.forward;
+            float test = Vector3.Dot(localPoint, forward);
+            if (test > dot)
             {
-                Vector3 localPoint = Camera.main.transform.InverseTransformPoint(obj.transform.position).normalized;
-                Vector3 forward = Vector3.forward;
-                float test = Vector3.Dot(localPoint, forward);
-                if (test > dot)
-                {
-                    dot = test;
-                    closest = obj;
-                }
-            }
-            catch
-            {
-                objListForRemove.Add(obj);
+                dot = test;
+                closest = obj;
             }
         }
 
-        Shared.hitWithBulletOrRocketObjects.RemoveAll(objListForRemove.Contains);
 
         target = closest;
     }
@@ -725,7 +732,7 @@ public class controlObject : MonoBehaviour
         float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
 
         // so that at high speeds it does not shake
-        PDUpDownResult *= 1 - (rb.velocity.magnitude / 2000);
+        PDUpDownResult    *= 1 - (rb.velocity.magnitude / 2000);
         PDLrftRightResult *= 1 - (rb.velocity.magnitude / 2000);
 
         // so that the rocket does not spin in place
@@ -734,6 +741,9 @@ public class controlObject : MonoBehaviour
             PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
             PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
 
+            PDUpDownResult *= 0.002f * rb.velocity.magnitude + 0.1f;
+            PDLrftRightResult *= 0.002f * rb.velocity.magnitude + 0.1f;
+
             if (Vector3.Distance(transform.position, aimPosition) > 4000)
             {
                 PDUpDownResult *= 0.2f;
@@ -741,7 +751,7 @@ public class controlObject : MonoBehaviour
             }
             else
             {
-                PDUpDownResult    *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
+                PDUpDownResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
                 PDLrftRightResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
             }
         }       
