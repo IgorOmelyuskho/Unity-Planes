@@ -479,7 +479,7 @@ public class controlObject : MonoBehaviour
 
             float angle = Vector3.Angle(target.transform.position - transform.position, rb.velocity);
 
-            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 120 && Vector3.Distance(transform.position, target.transform.position) < 100 ||
+            if (/*Vector3.Dot(forward, toOther) < 0*/ angle > 190 && Vector3.Distance(transform.position, target.transform.position) < 100 ||
                 Vector3.Distance(transform.position, target.transform.position) < distWhenRocketHitTarget) 
             {
                 int iterationCt = 4;
@@ -488,7 +488,9 @@ public class controlObject : MonoBehaviour
                 for (var j = 0; j < iterationCt; j++)
                 {
                     Vector3 rocketPosition = transform.position + (rb.velocity.magnitude / iterationCt) * rb.velocity.normalized * j * Time.fixedDeltaTime;
-                    float distance = Vector3.Distance(rocketPosition, target.transform.position);
+                    controlObject targetObj = target.GetComponent<controlObject>();
+                    Vector3 targetPosition = target.transform.position + (targetObj.rb.velocity.magnitude / iterationCt) * targetObj.rb.velocity.normalized * j * Time.fixedDeltaTime;
+                    float distance = Vector3.Distance(rocketPosition, targetPosition);
                     if (distance < minDistance)
                         minDistance = distance;
                 }
@@ -511,6 +513,7 @@ public class controlObject : MonoBehaviour
 
     void destroyLaunchedRocket()
     {
+        //Debug.Break();
         prefabForExplosion = GameObject.Find("Explosion");
         GameObject cloneExplosion = Instantiate(prefabForExplosion, gameObject.transform.position, Quaternion.identity);
         Destroy(gameObject);

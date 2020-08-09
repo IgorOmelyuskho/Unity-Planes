@@ -237,6 +237,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isLaunchedRocket: 0
+  target: {fileID: 0}
   localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 1.1
   distForAddAileronForce: 0
@@ -270,10 +272,10 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 1
   hp: 100
-  tractionVectorControlCoeff: 0.2
+  tractionVectorControlCoeff: 1
   maxControlPlaneAngle: 75
   maxControlPlaneRotationSpeed: 5
-  engineThrustCoeff: 150
+  engineThrustCoeff: 55
   engineThrustKG: 0
   controlPlaneDragCoeff: 0.08
   upDownCorpusDragCoeff: 0.045
