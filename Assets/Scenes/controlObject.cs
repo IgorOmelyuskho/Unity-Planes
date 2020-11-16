@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
 
+//http://www.zaretto.com/sites/zaretto.com/files/missile-aerodynamic-data/AIM120C5-Performance-Assessment-rev2.pdf
 public class controlObject : MonoBehaviour
 {
     Camera cam;
@@ -35,6 +36,7 @@ public class controlObject : MonoBehaviour
     float velocityMaggnitude;
 
     int counterForShoot;
+    int counter;
 
     List<GameObject> infoNearObjList = new List<GameObject>(); // list of cloned prefabs
 
@@ -45,6 +47,11 @@ public class controlObject : MonoBehaviour
     bool isPlayer = false;
 
     GameObject prefabForExplosion;
+
+    Transform trailRenderer;
+
+    bool observeLastLaunchedRocket;
+    bool observeLastLaunchedInControlObjRocket;
 
     // public
 
@@ -139,10 +146,13 @@ public class controlObject : MonoBehaviour
         altitudeTextLabel = GameObject.Find("controlObjectAltitude").GetComponent<Text>();
         tractionVectorControlTextLabel = GameObject.Find("controlObjectTractionVectorControl").GetComponent<Text>();
 
+        // find in self object (not in Unity Scene)
+        trailRenderer = gameObject.transform.Find("for-trail-renderer");
+
         //Cursor.lockState = CursorLockMode.Locked;
 
         cam = Camera.main;
-        if (cam.GetComponent<CameraOperate>().controlObject == gameObject && rocketOwner == null) { // rocketOwner == null - because bug if press U untill launch rocket
+        if (cam.GetComponent<CameraOperate>().controlObject == gameObject && rocketOwner == null && !Shared.player) { // rocketOwner == null - because bug if press U untill launch rocket
             isPlayer = true;
             Shared.player = gameObject;
         }
@@ -172,6 +182,8 @@ public class controlObject : MonoBehaviour
 
     void FixedUpdate()
     {
+        counter++;
+
         rb.inertiaTensor = tensor1 * rb.mass;
 
         if (isPlayer)
@@ -205,7 +217,8 @@ public class controlObject : MonoBehaviour
         rb.angularDrag = 1f * angularDragCoeff * rb.velocity.magnitude + 1f;
 
         // use for launchedRocket
-        destroyIfTargetNear();
+        destroyRocket();
+        offRocketEngine();
     }
 
     void Update()
@@ -226,12 +239,19 @@ public class controlObject : MonoBehaviour
         {
             launchRocket();
             //handleKeyInput(); // for bot can not turn
-        }
 
-        if (isPlayer && Input.GetKey(KeyCode.U) && lastLaunchedRocket)
-            cam.GetComponent<CameraOperate>().controlObject = lastLaunchedRocket;
-        else if (isPlayer)
-            cam.GetComponent<CameraOperate>().controlObject = gameObject;
+            if (Input.GetKeyDown(KeyCode.U))
+                observeLastLaunchedRocket = !observeLastLaunchedRocket;
+            if (Input.GetKeyDown(KeyCode.I))
+                observeLastLaunchedInControlObjRocket = !observeLastLaunchedInControlObjRocket;
+
+            if (observeLastLaunchedInControlObjRocket && Shared.lastLauncheInControlObjdRocket)
+                cam.GetComponent<CameraOperate>().controlObject = Shared.lastLauncheInControlObjdRocket;
+            else if (observeLastLaunchedRocket && lastLaunchedRocket)
+                cam.GetComponent<CameraOperate>().controlObject = lastLaunchedRocket;
+            else
+                cam.GetComponent<CameraOperate>().controlObject = gameObject;
+        }
     }
 
     void OnGUI()
@@ -465,11 +485,24 @@ public class controlObject : MonoBehaviour
         }
     }
 
-    void destroyIfTargetNear()
+    void offRocketEngine()
     {
+        if (isLaunchedRocket && trailRenderer && counter > 30000)
+        {
+            power = 0;
+            trailRenderer.gameObject.SetActive(false);
+        }
+    }
+
+    void destroyRocket()
+    {
+        if (isLaunchedRocket && counter > 250000)
+            destroyLaunchedRocket();
+
         if (isLaunchedRocket && !target)
             destroyLaunchedRocket();
 
+        // destroy If Target Near
         if (isLaunchedRocket && target)
         {
             Vector3 forward = transform.TransformDirection(rb.velocity);
@@ -502,9 +535,6 @@ public class controlObject : MonoBehaviour
                 else
                     damage = (20 - minDistance) * 5;
 
-                if (isPlayer)
-                    cam.GetComponent<CameraOperate>().controlObject = gameObject;
-
                 target.GetComponent<controlObject>().hp -= damage;
                 destroyLaunchedRocket();
             }
@@ -513,7 +543,7 @@ public class controlObject : MonoBehaviour
 
     void destroyLaunchedRocket()
     {
-        //Debug.Break();
+        //Debug.Break(); // pauses at the end of frame, not the point in code you put it
         prefabForExplosion = GameObject.Find("Explosion");
         GameObject cloneExplosion = Instantiate(prefabForExplosion, gameObject.transform.position, Quaternion.identity);
         Destroy(gameObject);
@@ -744,8 +774,8 @@ public class controlObject : MonoBehaviour
             PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
             PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
 
-            PDUpDownResult *= 0.002f * rb.velocity.magnitude + 0.1f;
-            PDLrftRightResult *= 0.002f * rb.velocity.magnitude + 0.1f;
+            PDUpDownResult    *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
+            PDLrftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
 
             if (Vector3.Distance(transform.position, aimPosition) > 4000)
             {

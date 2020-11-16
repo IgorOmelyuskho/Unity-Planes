@@ -2,23 +2,108 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Engine
+{
+    private float turnovers; // in percent
+    private float power;
+    private float trust;
+    private float engineThrustCoeff;
+    private float turnCoeffByPower;
+    private bool rotationDirection;
+    public float engineResponse; // на сколько быстро двигатель набирает нужные обороты
+
+    public Engine(float engineThrustCoeff, float turnCoeffByPower, bool rotationDirection, float engineResponse)
+    {
+        this.engineThrustCoeff = engineThrustCoeff;
+        this.turnCoeffByPower = turnCoeffByPower;
+        this.rotationDirection = rotationDirection;
+        this.engineResponse = engineResponse;
+    }
+
+    public float Power
+    {
+        set
+        {
+            if (value >= 100)
+                power = 100f;
+            else if (value <= 0)
+                power = 0f;
+            else
+                power = value;
+        }
+        get
+        {
+            return power;
+        }
+    }
+
+    public float Thrust // тяга
+    {
+        get
+        {
+            return turnovers * engineThrustCoeff;
+        }
+    }
+
+    public float Turnovers // обороты
+    {
+        get
+        {
+            return turnovers;
+        }
+    }
+
+    public float Torque // крутяший момент
+    {
+        get
+        {
+            if (rotationDirection)
+            {
+                return power * turnCoeffByPower;
+            } else
+            {
+                return -power * turnCoeffByPower;
+            }
+        }
+    }
+
+    public void Update()
+    {
+        if (Mathf.Abs(power - turnovers) <= engineResponse)
+            turnovers = power;
+        else if (power - turnovers > 0)
+            turnovers += engineResponse;
+        else
+            turnovers -= engineResponse;
+
+        //turnovers = power;
+    }
+}
+
 public class Quadcopter : MonoBehaviour
 {
     public float engineThrustCoeff;
     public float engineTorqueCoeff;
+    public float engineResponse;
 
     public Rigidbody rb;
 
-    public float leftBackEnginePower;
-    public float leftFwdEnginePower;
-    public float rightBackEnginePower;
-    public float rightFwdEnginePower;
+    private Engine leftBackEngine;
+    private Engine leftFwdEngine;
+    private Engine rightBackEngine;
+    private Engine rightFwdEngine;
+
+    public float leftBackEngineThrust;
+    public float leftFwdEngineThrust;
+    public float rightBackEngineThrust;
+    public float rightFwdEngineThrust;
 
     public float upDownCorpusDragCoeff;
     public float leftRightCorpusDragCoeff;
     public float fwdBackCorpusDragCoeff;
 
-    public float turnCoeff;
+    public float turnCoeffByPower; // зависсимость крутящего момента двигателя от ег мощности
+    public float turnCoeffPower; //на сколько нужно имменить мощность двигателя чтоб дрон поворачивался
 
     public Vector3 spd;
     public float PDResult;
@@ -26,12 +111,17 @@ public class Quadcopter : MonoBehaviour
     public float pCoeffHoldAltitude;
     public float dCoeffHoldAltitude;
 
+    public float aCoeffHoldAngle;
     public float pCoeffHoldAngle;
     public float dCoeffHoldAngle;
+    public float iCoeffHoldAngle;
+    public float maxSumForPIDController;
 
     public float maxAngle;
 
     public Vector3 localAngularVelocity;
+
+    Shared.PIDController holdAnglePIDController;
 
     bool moveLeft;
     bool moveRight;
@@ -45,9 +135,14 @@ public class Quadcopter : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        print(tensor1);
-        print(rb.mass);
         rb.inertiaTensor = tensor1 * rb.mass;
+
+        leftBackEngine =  new Engine(engineThrustCoeff, turnCoeffByPower, false, engineResponse);
+        leftFwdEngine =   new Engine(engineThrustCoeff, turnCoeffByPower, true, engineResponse);
+        rightBackEngine = new Engine(engineThrustCoeff, turnCoeffByPower, true, engineResponse);
+        rightFwdEngine =  new Engine(engineThrustCoeff, turnCoeffByPower, false, engineResponse);
+
+        holdAnglePIDController = new Shared.PIDController(aCoeffHoldAngle, pCoeffHoldAngle, dCoeffHoldAngle, iCoeffHoldAngle, maxSumForPIDController);
 
         //rb.AddForceAtPosition(new Vector3(100,0,0), new Vector3(0,0,1));
     }
@@ -62,11 +157,9 @@ public class Quadcopter : MonoBehaviour
         //holdAltitude(5);
 
         // call before addForceEngines
-        turnDrone();
+        //turnDrone();
         //moveDroneByDirection();
         holdAngle();
-
-        clampEnginesPower();
 
         addForceLBEngine();
         addForceLFEngine();
@@ -76,6 +169,8 @@ public class Quadcopter : MonoBehaviour
         addCorpusForces();
 
         spd = rb.velocity;
+
+        holdAnglePIDController.Update(aCoeffHoldAngle, pCoeffHoldAngle, dCoeffHoldAngle, iCoeffHoldAngle, maxSumForPIDController);
     }
 
     void Update()
@@ -110,22 +205,21 @@ public class Quadcopter : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
             moveRight = true;
 
+        float powerCoeff = 2;
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            leftBackEnginePower += 2;
-            rightBackEnginePower += 2;
-            leftFwdEnginePower += 2;
-            rightFwdEnginePower += 2;
+            leftBackEngine.Power += powerCoeff;
+            rightBackEngine.Power += powerCoeff;
+            leftFwdEngine.Power += powerCoeff;
+            rightFwdEngine.Power += powerCoeff;
         }
         if (Input.GetKey(KeyCode.LeftControl))
         {
-            leftBackEnginePower -= 2;
-            rightBackEnginePower -= 2;
-            leftFwdEnginePower -= 2;
-            rightFwdEnginePower -= 2;
+            leftBackEngine.Power -= powerCoeff;
+            rightBackEngine.Power -= powerCoeff;
+            leftFwdEngine.Power -= powerCoeff;
+            rightFwdEngine.Power -= powerCoeff;
         }
-
-        clampEnginesPower();
     }
 
     void addCorpusForces()
@@ -143,68 +237,64 @@ public class Quadcopter : MonoBehaviour
         rb.AddForceAtPosition(forceForwardBackPlane, transform.position);
     }
 
-    void addEngineThrustForce(float power, Vector3 positionForAddForce)
+    void addEngineThrustForces(Engine engine, Vector3 positionForAddForce) //turnovers in percent
     {
-        float engineThrust = engineThrustCoeff * power;
+        engine.Update();
 
-        Vector3 force = engineThrust * transform.up;
+        Vector3 force = engine.Thrust * transform.up;
 
         rb.AddForceAtPosition(force, positionForAddForce);
 
-        UnityEngine.Debug.DrawLine(positionForAddForce, positionForAddForce + force * 0.01f, Color.magenta);
-    }
+        rb.AddTorque(transform.up * engine.Torque);
 
+        Vector3 shift = new Vector3(0.02f, 0.02f, 0.02f);
+        UnityEngine.Debug.DrawLine(positionForAddForce + shift, positionForAddForce + shift + engine.Turnovers * transform.up * 0.2f, Color.blue); // Turnovers
+        UnityEngine.Debug.DrawLine(positionForAddForce - shift, positionForAddForce - shift + engine.Power * transform.up * 0.2f, Color.green); // Power
 
-    void addEngineTorque(float power)
-    {
-        float engineTorque = engineTorqueCoeff * power;
-        rb.AddTorque(transform.up * engineTorque);
-    }
+        //UnityEngine.Debug.DrawLine(positionForAddForce, positionForAddForce + force * 0.01f, Color.magenta); // force
+
+        leftBackEngineThrust = leftBackEngine.Thrust;
+        leftFwdEngineThrust =  leftFwdEngine.Thrust;
+        rightBackEngineThrust = rightBackEngine.Thrust;
+        rightFwdEngineThrust = rightFwdEngine.Thrust;
+}
 
     void addForceLBEngine()
     {
         Vector3 pos = transform.position + 1.2f * -transform.forward + 0.7f * -transform.right;
         // calc power leftBackEnginePower = ...
-        addEngineThrustForce(leftBackEnginePower, pos);
-
-        addEngineTorque(leftBackEnginePower);
+        addEngineThrustForces(leftBackEngine, pos);
     }
 
     void addForceLFEngine()
     {
         Vector3 pos = transform.position + -1.2f * -transform.forward + 0.7f * -transform.right;
         // calc power leftFwdEnginePower = ...
-        addEngineThrustForce(leftFwdEnginePower, pos);
-
-        addEngineTorque(-leftFwdEnginePower); //
+        addEngineThrustForces(leftFwdEngine, pos);
     }
 
     void addForceRBEngine()
     {
         Vector3 pos = transform.position + 1.2f * -transform.forward - 0.7f * -transform.right;
         // calc power rightBackEnginePower = ...
-        addEngineThrustForce(rightBackEnginePower, pos);
-
-        addEngineTorque(-rightBackEnginePower); //
+        addEngineThrustForces(rightBackEngine, pos);
     }
 
     void addForceRFEngine()
     {
         Vector3 pos = transform.position + -1.2f * -transform.forward - 0.7f * -transform.right;
         // calc power rightFwdEnginePower = ...
-        addEngineThrustForce(rightFwdEnginePower, pos);
-
-        addEngineTorque(rightFwdEnginePower);
+        addEngineThrustForces(rightFwdEngine, pos);
     }
 
     void holdAltitude(float altitude)
     {
         PDResult = Shared.PDController(altitude - transform.position.y, -rb.velocity.y, pCoeffHoldAltitude, dCoeffHoldAltitude);
         float power = Mathf.Clamp(PDResult, 0, 100);
-        leftBackEnginePower = power;
-        leftFwdEnginePower = power;
-        rightBackEnginePower = power;
-        rightFwdEnginePower = power;
+        leftBackEngine.Power = power;
+        leftFwdEngine.Power = power;
+        rightBackEngine.Power = power;
+        rightFwdEngine.Power = power;
     }
 
     void holdAngle()
@@ -240,60 +330,52 @@ public class Quadcopter : MonoBehaviour
             moveDroneBack();
     }
 
-    void clampEnginesPower()
-    {
-        leftBackEnginePower = Mathf.Clamp(leftBackEnginePower, 0, 100);
-        leftFwdEnginePower = Mathf.Clamp(leftFwdEnginePower, 0, 100);
-        rightBackEnginePower = Mathf.Clamp(rightBackEnginePower, 0, 100);
-        rightFwdEnginePower = Mathf.Clamp(rightFwdEnginePower, 0, 100);
-    }
-
     void turnLeft()
     {
-        leftBackEnginePower += turnCoeff;
-        rightFwdEnginePower += turnCoeff;
-        leftFwdEnginePower -= turnCoeff;
-        rightBackEnginePower -= turnCoeff;
+        leftBackEngine.Power += turnCoeffPower;
+        rightFwdEngine.Power += turnCoeffPower;
+        leftFwdEngine.Power -= turnCoeffPower;
+        rightBackEngine.Power -= turnCoeffPower;
     }
 
     void turnRight()
     {
-        leftBackEnginePower -= turnCoeff;
-        rightFwdEnginePower -= turnCoeff;
-        leftFwdEnginePower += turnCoeff;
-        rightBackEnginePower += turnCoeff;
+        leftBackEngine.Power -= turnCoeffPower;
+        rightFwdEngine.Power -= turnCoeffPower;
+        leftFwdEngine.Power += turnCoeffPower;
+        rightBackEngine.Power += turnCoeffPower;
     }
 
     void moveDroneLeft()
     {
-        leftBackEnginePower -= 2;
-        rightFwdEnginePower += 2;
-        leftFwdEnginePower -= 2;
-        rightBackEnginePower += 2;
+        leftBackEngine.Power -= 2;
+        rightFwdEngine.Power += 2;
+        leftFwdEngine.Power -= 2;
+        rightBackEngine.Power += 2;
     }
 
     void moveDroneRight()
     {
-        leftBackEnginePower += 2;
-        rightFwdEnginePower -= 2;
-        leftFwdEnginePower += 2;
-        rightBackEnginePower -= 2;
+        leftBackEngine.Power += 2;
+        rightFwdEngine.Power -= 2;
+        leftFwdEngine.Power += 2;
+        rightBackEngine.Power -= 2;
     }
 
     void moveDroneFwd()
     {
-        leftBackEnginePower += 2;
-        rightFwdEnginePower -= 2;
-        leftFwdEnginePower -= 2;
-        rightBackEnginePower += 2;
+        leftBackEngine.Power += 2;
+        rightFwdEngine.Power -= 2;
+        leftFwdEngine.Power -= 2;
+        rightBackEngine.Power += 2;
     }
 
     void moveDroneBack()
     {
-        leftBackEnginePower -= 2;
-        rightFwdEnginePower += 2;
-        leftFwdEnginePower += 2;
-        rightBackEnginePower -= 2;
+        leftBackEngine.Power -= 2;
+        rightFwdEngine.Power += 2;
+        leftFwdEngine.Power += 2;
+        rightBackEngine.Power -= 2;
     }
 
     void holdAngleLeftRight()
@@ -318,19 +400,19 @@ public class Quadcopter : MonoBehaviour
     void holdAngleZero()
     {
         float deltaAngleFwdback = -Mathf.DeltaAngle(0, transform.localEulerAngles.x);
-        float PDResultFwdBack = Shared.PDController(deltaAngleFwdback, -localAngularVelocity.x, pCoeffHoldAngle, dCoeffHoldAngle);
+        float PDResultFwdBack = holdAnglePIDController.Calculate(deltaAngleFwdback, -localAngularVelocity.x);
         float powerFwdBack = Mathf.Clamp(PDResultFwdBack, -100, 100);
-        leftBackEnginePower += powerFwdBack;
-        leftFwdEnginePower -= powerFwdBack;
-        rightBackEnginePower += powerFwdBack;
-        rightFwdEnginePower -= powerFwdBack;
+        leftBackEngine.Power += powerFwdBack;
+        leftFwdEngine.Power -= powerFwdBack;
+        rightBackEngine.Power += powerFwdBack;
+        rightFwdEngine.Power -= powerFwdBack;
 
-        float deltaAngleLeftRight = -Mathf.DeltaAngle(0, transform.localEulerAngles.z);
-        float PDResultLeftRight = Shared.PDController(deltaAngleLeftRight, -localAngularVelocity.z, pCoeffHoldAngle, dCoeffHoldAngle);
-        float powerLeftRight = Mathf.Clamp(PDResultLeftRight, -100, 100);
-        leftBackEnginePower -= powerLeftRight;
-        leftFwdEnginePower -= powerLeftRight;
-        rightBackEnginePower += powerLeftRight;
-        rightFwdEnginePower += powerLeftRight;
+        //float deltaAngleLeftRight = -Mathf.DeltaAngle(0, transform.localEulerAngles.z);
+        //float PDResultLeftRight = holdAnglePIDController.Calculate(deltaAngleLeftRight, -localAngularVelocity.z);
+        //float powerLeftRight = Mathf.Clamp(PDResultLeftRight, -100, 100);
+        //leftBackEngine.Power -= powerLeftRight;
+        //leftFwdEngine.Power -= powerLeftRight;
+        //rightBackEngine.Power += powerLeftRight;
+        //rightFwdEngine.Power += powerLeftRight;
     }
 }

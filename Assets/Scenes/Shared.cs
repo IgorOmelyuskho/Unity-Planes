@@ -62,6 +62,7 @@ public class Shared
     static public AngleCoords[] angleArr;
     static public List<GameObject> hitWithBulletOrRocketObjects = new List<GameObject>();
     static public GameObject player;
+    static public GameObject lastLauncheInControlObjdRocket;
 
     static Shared()
     {
@@ -108,6 +109,50 @@ public class Shared
     {
         return p * pCoeff + d * dCoeff;
     }
+
+    public class PIDController
+    {
+        public float aCoeff;
+        public float pCoeff;
+        public float dCoeff;
+        public float iCoeff;
+        public float error_sum;
+        public float error_sumMax;
+        public float p_old;
+
+        public PIDController(float aCoeff, float pCoeff, float dCoeff, float iCoeff, float error_sumMax)
+        {
+            this.aCoeff = aCoeff;
+            this.pCoeff = pCoeff;
+            this.dCoeff = dCoeff;
+            this.iCoeff = iCoeff;
+            this.error_sumMax = error_sumMax;
+        }
+
+        public void Update(float aCoeff, float pCoeff, float dCoeff, float iCoeff, float error_sumMax)
+        {
+            this.aCoeff = aCoeff;
+            this.pCoeff = pCoeff;
+            this.dCoeff = dCoeff;
+            this.iCoeff = iCoeff;
+            this.error_sumMax = error_sumMax;
+        }
+
+        public float Calculate(float p, float d)
+        {
+            error_sum += Time.fixedDeltaTime * p;
+
+            //Clamp the sum 
+            error_sum = Mathf.Clamp(error_sum, -error_sumMax, error_sumMax);
+
+            float a = (p - p_old) / Time.fixedDeltaTime;
+
+            p_old = p;
+
+            return a * aCoeff + p * pCoeff + d * dCoeff + error_sum * iCoeff;
+        }
+    }
+
 
     // aim without gravity and wind drag
     // selfSpeed - for rocket use Vector3.zero

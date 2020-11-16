@@ -38,6 +38,8 @@ public class rocketLauncher : MonoBehaviour
             Shared.player.GetComponent<controlObject>().addObjToInfoNearObjList(rocketClone);
             Shared.hitWithBulletOrRocketObjects.Add(rocketClone);
 
+            Shared.lastLauncheInControlObjdRocket = rocketClone;
+
             Shared.player.GetComponent<controlObject>().hp = 100;
         }
     }
