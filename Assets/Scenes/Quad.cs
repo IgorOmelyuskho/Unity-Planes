@@ -5,8 +5,8 @@ public class Quad : MonoBehaviour
 {
     public Renderer rend;
     public Texture2D texture;
-    int textureW = 1500;
-    int textureH = 3000;
+    int textureW = 1500 * 2;
+    int textureH = 3000 * 2;
 
     // Start is called before the first frame update
     void Start()
@@ -32,11 +32,12 @@ public class Quad : MonoBehaviour
             {
                 float x = Shared.angleArr[i].coordsArr[j].x;
                 float y = Shared.angleArr[i].coordsArr[j].y - texture.height / 2;
-                texture.SetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y), Color.blue);
+                //texture.SetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y), Color.blue);
+                DrawDot(x, y, Color.blue);
             }
         }
 
-        DrawDot(xCoord, yCoord - texture.height / 2);
+        DrawBigDot(xCoord, yCoord - texture.height / 2, new Color(1, 0, 0.4f));
         NearestAnglIndexAndCoordIndex nearest = Shared.FindNearestIndex(xCoord, yCoord);
         DrawForAngle(new Color(0.7f, 0.5f, 0.1f), nearest.interpolateDegAngle);
         DrawAnotherColor(new Color(1f, 0.1f, 1f), nearest.angleIndex);
@@ -51,7 +52,8 @@ public class Quad : MonoBehaviour
         for (var i = 0; i < res.Length; i++)
         {
             res[i].y = res[i].y - texture.height / 2;
-            texture.SetPixel(Mathf.RoundToInt(res[i].x), Mathf.RoundToInt(res[i].y), color);
+            //texture.SetPixel(Mathf.RoundToInt(res[i].x), Mathf.RoundToInt(res[i].y), color);
+            DrawDot(res[i].x, res[i].y, color);
         }
         texture.Apply();
     }
@@ -63,14 +65,14 @@ public class Quad : MonoBehaviour
         {
             float xCoord = Shared.angleArr[index].coordsArr[i].x;
             float yCoord = Shared.angleArr[index].coordsArr[i].y - texture.height / 2;
-            texture.SetPixel(Mathf.RoundToInt(xCoord), Mathf.RoundToInt(yCoord), color);
+            //texture.SetPixel(Mathf.RoundToInt(xCoord), Mathf.RoundToInt(yCoord), color);
+            DrawDot(xCoord, yCoord, color);
         }
         texture.Apply();
     }
 
-    void DrawDot(float x, float y)
+    void DrawDot(float x, float y, Color color)
     {
-        Color color = new Color(1, 0, 0.4f);
         int xInt = Mathf.RoundToInt(x);
         int yInt = Mathf.RoundToInt(y);
         texture.SetPixel(xInt, yInt, color);
@@ -84,10 +86,24 @@ public class Quad : MonoBehaviour
         texture.SetPixel(xInt + 1, yInt, color);
     }
 
+    void DrawBigDot(float x, float y, Color color)
+    {
+        int c = 4;
+        DrawDot(x, y, color);
+        DrawDot(x - c, y - c, color);
+        DrawDot(x - c, y + c, color);
+        DrawDot(x + c, y - c, color);
+        DrawDot(x + c, y + c, color);
+        DrawDot(x, y - c, color);
+        DrawDot(x, y + c, color);
+        DrawDot(x - c, y, color);
+        DrawDot(x + c, y, color);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1))
         {
             RaycastHit hit;
             if (!Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
@@ -103,8 +119,6 @@ public class Quad : MonoBehaviour
             pixelUV.x *= tex.width;
             pixelUV.y *= tex.height;
 
-            DrawDot(pixelUV.x, pixelUV.y);
-            texture.Apply();
             Init(pixelUV.x, pixelUV.y - texture.height / 2);
         }
     }

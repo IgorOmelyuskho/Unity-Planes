@@ -57,7 +57,8 @@ public class Shared
     static public float gravity = 9.8f;
     /*static public float gravity = 0f;*/
     static public readonly int iterationCnt = 500;
-    static public float speed = 100;
+    static public float speed = 500;
+    //static public float decelerationCoeff = 0.01f; // mass, drag coefficient, area, air density, ...
     public const int deltaAngle = 10;
     static public AngleCoords[] angleArr;
     static public List<GameObject> hitWithBulletOrRocketObjects = new List<GameObject>();
@@ -76,8 +77,8 @@ public class Shared
         int angleArrArrIndex = 0;
         for (var i = -90; i <= 90; i += Shared.deltaAngle)
         {
-            //Shared.angleArr[angleArrArrIndex] = CalcForAngle(i);
-            //angleArrArrIndex++;
+            Shared.angleArr[angleArrArrIndex] = CalcForAngle(i);
+            angleArrArrIndex++;
         }
 
         hitWithBulletOrRocketObjects = GameObject.FindGameObjectsWithTag("hitWithBulletOrRocket").OfType<GameObject>().ToList();
@@ -180,6 +181,11 @@ public class Shared
         return targetingPosition;
     }
 
+    //static public vector3 calculateaim2(vector3 targetposition, vector3 targetspeed, vector3 selfposition, float bulletorrocketspeed)
+    //{
+
+    //}
+
     static public float LineaRInterpolate(float x0, float y0, float x1, float y1, float x)
     {
         if (Mathf.Abs(x1 - x0) < 0.000000000001)
@@ -216,7 +222,7 @@ public class Shared
         result = WhenExit(angleIndex1, angleIndex2, coordsVector, dist1, dist2, flyTime);
 
         float timeEnd = Time.realtimeSinceStartup;
-        Debug.Log((timeEnd - timeStart) * 1000);
+        //Debug.Log((timeEnd - timeStart) * 1000);
         return result;
     }
 
