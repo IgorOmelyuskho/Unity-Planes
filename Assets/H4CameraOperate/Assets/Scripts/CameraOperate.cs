@@ -55,6 +55,8 @@ public class CameraOperate : MonoBehaviour
     public bool attachToAntiAircraft = true;
     public bool lookAtAntiAircraftForward = true;
 
+    public bool lookAtTarget = false;
+
     Vector3 q;
     Vector3 w;
     Vector3 e;
@@ -220,7 +222,7 @@ public class CameraOperate : MonoBehaviour
 
     void customCamLogic(Vector3 deltaPosition)
     {
-        float fwd = 19f;
+        float fwd = 39f;
         float up = 5f;
         Vector3 camOffset;
 
@@ -268,11 +270,19 @@ public class CameraOperate : MonoBehaviour
         }
         else if (attachToAntiAircraft == true)
         {
-            m_transform.position = antiAircraft.transform.position + new Vector3(0, 1, 0);
+            Vector3 antiAircraftfwd = antiAircraft.transform.forward;
+            Vector3 antiAircraftUp = antiAircraft.transform.up;
+            m_transform.position = antiAircraft.transform.position
+                + new Vector3(0, 4, 0);
+                //- antiAircraftfwd * 15 + antiAircraftUp * 2;
             if (lookAtAntiAircraftForward)
             {
                 m_transform.LookAt(antiAircraft.transform.forward * 1000000);
             }
+        }
+        else if (lookAtTarget == true)
+        {
+            m_transform.LookAt(target.transform.position);
         }
         else
         {

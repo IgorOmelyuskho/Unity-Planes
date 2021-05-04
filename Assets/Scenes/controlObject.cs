@@ -29,7 +29,6 @@ public class controlObject : MonoBehaviour
     float timePressUp = 0;
     float timePressDown = 0;
 
-    Vector3 actualAcceleration;
     float maxAcceleration;
 
     Vector3 velocity;
@@ -57,6 +56,10 @@ public class controlObject : MonoBehaviour
 
     public bool isLaunchedRocket = false; // use for rocket, public for use in rocketLauncher script
     public GameObject target; // public for use in rocketLauncher script
+
+    public Vector3 actualAcceleration;
+    public Vector3 prevAcceleration;
+    public Vector3 actualJerk;
 
     public Vector3 localAngularVelocity;
     public float distForAddControlPlaneOrEngineForce;
@@ -167,6 +170,7 @@ public class controlObject : MonoBehaviour
         if (!isLaunchedRocket)
             rb.velocity = transform.forward * initSpeed;
         prevVelocity = rb.velocity;
+        prevAcceleration = Vector3.zero;
         rb.maxAngularVelocity = 20;
         rb.inertiaTensor = tensor1 * rb.mass;
 
@@ -210,6 +214,7 @@ public class controlObject : MonoBehaviour
             addControlPlaneForcesWithEngineWind();
 
         calcAcceleration();
+        calcJerk();
         calcAttackAngle();
 
         localAngularVelocity = transform.InverseTransformDirection(rb.angularVelocity) * Mathf.Rad2Deg; // deg / sec
@@ -564,7 +569,7 @@ public class controlObject : MonoBehaviour
             else
                 targetSpeed = Vector3.zero;
 
-            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity);
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity, Vector3.zero);
             lineRenderer.SetPosition(0, target.transform.position);
             lineRenderer.SetPosition(1, aimPosition);
         }
@@ -744,8 +749,13 @@ public class controlObject : MonoBehaviour
 
         if (isLaunchedRocket && target)
         {
-            // show aimPosition
-            aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
+            Vector3 targetAcceleration = Vector3.zero;
+            try
+            {
+                targetAcceleration = target.GetComponent<controlObject>().actualAcceleration;
+            }
+            catch { }
+            aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero, targetAcceleration);
             Vector3 direction = aimPosition - transform.position;
 
             //yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
@@ -1042,7 +1052,7 @@ public class controlObject : MonoBehaviour
     {
         if (target)
         {
-            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero);
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero, Vector3.zero);
             UnityEngine.Debug.DrawLine(transform.position, aimPosition, Color.yellow);
         }
     }
@@ -1060,5 +1070,11 @@ public class controlObject : MonoBehaviour
 
         if (actualAcceleration.magnitude / Physics.gravity.magnitude > maxAcceleration)
             maxAcceleration = actualAcceleration.magnitude / Physics.gravity.magnitude;
+    }
+
+    void calcJerk()
+    {
+        actualJerk = (actualAcceleration - prevAcceleration) / Time.fixedDeltaTime;
+        prevAcceleration = actualAcceleration;
     }
 }

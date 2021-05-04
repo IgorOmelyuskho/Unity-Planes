@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 8319792646862752140}
   - component: {fileID: 8311754597844415823}
   - component: {fileID: 114638880955100784}
-  m_Layer: 0
+  - component: {fileID: 114198507986488164}
+  m_Layer: 8
   m_Name: bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,9 +94,21 @@ MonoBehaviour:
   target: {fileID: 0}
   speed: {x: 0, y: 0, z: 0}
   speedMagnitude: 0
-  useGravity: 0
-  distWhenBulletHitTarget: 1
-  iterationCt: 8
-  flyTime: 0
-  yOffserDueToGravity: 0
-  initBulletSpeed: 500
+  timeToDestroy: 0
+--- !u!114 &114198507986488164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7385590594452993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: ab91fb95c038fc14c937a5016a0a44d3, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0

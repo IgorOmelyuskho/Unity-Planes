@@ -56,7 +56,7 @@ public class Shared
 {
     static public float gravity = 9.8f;
     /*static public float gravity = 0f;*/
-    static public readonly int iterationCnt = 500;
+    static public readonly int iterationCnt = 1500;
     static public float speed = 500;
     //static public float decelerationCoeff = 0.01f; // mass, drag coefficient, area, air density, ...
     public const int deltaAngle = 10;
@@ -157,14 +157,15 @@ public class Shared
 
     // aim without gravity and wind drag
     // selfSpeed - for rocket use Vector3.zero
-    static public Vector3 CalculateAim(Vector3 targetPosition, Vector3 targetSpeed, Vector3 selfPosition, float bulletOrRocketSpeed, Vector3 selfSpeed)
+    static public Vector3 CalculateAim(Vector3 targetPosition, Vector3 targetSpeed, Vector3 selfPosition, float bulletOrRocketSpeed, Vector3 selfSpeed, Vector3 targetAcceleration)
     {
         Vector3 targetingPosition = targetPosition;
         for (int i = 0; i < 10; i++)
         {
             float dist = (selfPosition - targetingPosition).magnitude;
             float timeToTarget = dist / bulletOrRocketSpeed;
-            targetingPosition = targetPosition + (targetSpeed - selfSpeed) * timeToTarget;
+            targetingPosition = targetPosition + (targetSpeed - selfSpeed) * timeToTarget;// + 
+                //targetAcceleration * Mathf.Pow(timeToTarget, 2) / 2;
             if (
                 float.IsNaN(targetingPosition.x) ||
                 float.IsNaN(targetingPosition.y) ||
