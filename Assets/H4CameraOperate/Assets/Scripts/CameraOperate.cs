@@ -57,6 +57,9 @@ public class CameraOperate : MonoBehaviour
 
     public bool lookAtTarget = false;
 
+    public AnimationCurve fieldOfViewAnimationCurve;
+    public AnimationCurve shiftAnimationCurve;
+
     Vector3 q;
     Vector3 w;
     Vector3 e;
@@ -67,17 +70,18 @@ public class CameraOperate : MonoBehaviour
 
     private float minFov = 1f;
     private float maxFov = 60f;
+    float fov;
     public float rotateSpeedCoeff;
 
     float xCamRotate = 0.0f;
     float yCamRotate = 0.0f;
-
 
     public float dst = 0;
 
     // Start is called before the first frame update
     void Start()
     {
+        fov = maxFov;
         m_transform = transform;
     }
 
@@ -155,7 +159,7 @@ public class CameraOperate : MonoBehaviour
             {
                 // position = current position + scroll amount
                 /*m_transform.position += m_transform.forward * scroll * 1000f * Time.deltaTime * scrollSpeed;*/
-                float fov = Camera.main.fieldOfView;
+                fov = Camera.main.fieldOfView;
                 fov += Input.GetAxis("Mouse ScrollWheel") * -20.0f;
                 fov = Mathf.Clamp(fov, minFov, maxFov);
                 Camera.main.fieldOfView = fov;
@@ -255,7 +259,17 @@ public class CameraOperate : MonoBehaviour
                 m_transform.position = controlObject.transform.position - camOffset;
             }
 
-            if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
+            Camera.main.fieldOfView = fov;
+            GameObject target = controlObject.GetComponent<controlObject>().target;
+            if (Input.GetMouseButton(2) && target)
+            {
+                Vector3 direction = target.transform.position - controlObject.transform.position;
+                Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
+                m_transform.position = (controlObject.transform.position - direction) + perpendicular * direction.magnitude * shiftAnimationCurve.Evaluate(direction.magnitude);
+                m_transform.LookAt((target.transform.position + controlObject.transform.position) / 2);
+                Camera.main.fieldOfView = fieldOfViewAnimationCurve.Evaluate(direction.magnitude);
+            }
+            else if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
             {
                 m_transform.LookAt(controlObject.transform.forward * 1000000);
             }
