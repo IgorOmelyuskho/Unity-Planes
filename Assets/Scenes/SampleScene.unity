@@ -2533,6 +2533,18 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.055
   controlPlaneDragEngineWindCoeff: 0
+  correctPDResultAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  correctPDResultTractionAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pCoeffLeftRight: 15
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
@@ -6819,6 +6831,18 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.055
   controlPlaneDragEngineWindCoeff: 0
+  correctPDResultAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  correctPDResultTractionAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pCoeffLeftRight: 15
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
@@ -7771,6 +7795,18 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.055
   controlPlaneDragEngineWindCoeff: 0
+  correctPDResultAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  correctPDResultTractionAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pCoeffLeftRight: 15
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
@@ -8479,6 +8515,81 @@ MonoBehaviour:
   forwardWingDragCoeff: 0.1
   angularDragCoeff: 0.055
   controlPlaneDragEngineWindCoeff: 0
+  correctPDResultAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.015930265
+      value: 0.99884033
+      inSlope: 1.8586721
+      outSlope: 1.8586721
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.81333256
+      value: 2.540168
+      inSlope: 0.67244613
+      outSlope: 0.67244613
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 4.0236845
+      value: 3.7152636
+      inSlope: 0.021329088
+      outSlope: 0.021329088
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10.365461
+      value: 3.7661982
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 29.97107
+      value: 0.9902592
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  correctPDResultTractionAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1.875154
+      value: 0.30145264
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1000
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pCoeffLeftRight: 15
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10

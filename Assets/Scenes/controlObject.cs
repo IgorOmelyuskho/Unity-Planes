@@ -125,6 +125,8 @@ public class controlObject : MonoBehaviour
     public float forwardWingDragCoeff;
     public float angularDragCoeff;
     public float controlPlaneDragEngineWindCoeff;
+    public AnimationCurve correctPDResultAnimationCurve;
+    public AnimationCurve correctPDResultTractionAnimationCurve;
 
     public float pCoeffLeftRight;
     public float dCoeffLeftRight;
@@ -771,36 +773,45 @@ public class controlObject : MonoBehaviour
             xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
         }
 
-        float PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
-        float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
+        float correctResultUpDown =    correctPDResultAnimationCurve.Evaluate(Mathf.Abs(xAngleBetweenForwardAndDirectionCircle));
+        float correctResultLeftRight = correctPDResultAnimationCurve.Evaluate(Mathf.Abs(yAngleBetweenForwardAndDirectionCircle));
+        if (tractionVectorControlEnabled)
+        {
+            float value = correctPDResultTractionAnimationCurve.Evaluate(rb.velocity.magnitude);
+            correctResultUpDown *= value;
+            correctResultLeftRight *= value;
+        }
+
+        float PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown    * correctResultUpDown,    dCoeffUpDown);
+        float PDLeftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight * correctResultLeftRight, dCoeffLeftRight);
 
         // so that at high speeds it does not shake
         PDUpDownResult    *= 1 - (rb.velocity.magnitude / 2000);
-        PDLrftRightResult *= 1 - (rb.velocity.magnitude / 2000);
+        PDLeftRightResult *= 1 - (rb.velocity.magnitude / 2000);
 
         // so that the rocket does not spin in place
         if (isLaunchedRocket && target)
         {
             PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
-            PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
+            PDLeftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
 
             PDUpDownResult    *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
-            PDLrftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
+            PDLeftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
 
             if (Vector3.Distance(transform.position, aimPosition) > 4000)
             {
                 PDUpDownResult *= 0.2f;
-                PDLrftRightResult *= 0.2f;
+                PDLeftRightResult *= 0.2f;
             }
             else
             {
                 PDUpDownResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
-                PDLrftRightResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
+                PDLeftRightResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
             }
         }       
 
         float upDownTargetAngle = Mathf.Clamp(PDUpDownResult, -maxControlPlaneAngle, maxControlPlaneAngle);
-        float leftRightTargetAngle = Mathf.Clamp(PDLrftRightResult, -maxControlPlaneAngle, maxControlPlaneAngle);
+        float leftRightTargetAngle = Mathf.Clamp(PDLeftRightResult, -maxControlPlaneAngle, maxControlPlaneAngle);
 
         float upDownControlPlaneSignedAngle = Shared.GetSignedAngle(transform.rotation, upDown.transform.rotation, transform.right);
         float leftRightControlPlaneSignedAngle = Shared.GetSignedAngle(transform.rotation, leftRight.transform.rotation, transform.up);
