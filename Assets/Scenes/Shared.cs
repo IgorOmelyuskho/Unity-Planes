@@ -164,8 +164,7 @@ public class Shared
         {
             float dist = (selfPosition - targetingPosition).magnitude;
             float timeToTarget = dist / bulletOrRocketSpeed;
-            targetingPosition = targetPosition + (targetSpeed - selfSpeed) * timeToTarget;// + 
-                //targetAcceleration * Mathf.Pow(timeToTarget, 2) / 2;
+            targetingPosition = targetPosition + (targetSpeed - selfSpeed) * timeToTarget + targetAcceleration * Mathf.Pow(timeToTarget, 2) / 2;
             if (
                 float.IsNaN(targetingPosition.x) ||
                 float.IsNaN(targetingPosition.y) ||

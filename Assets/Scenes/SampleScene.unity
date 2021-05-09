@@ -413,7 +413,7 @@ MeshRenderer:
   m_GameObject: {fileID: 33426246}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -421,7 +421,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 35860012da3f1df40934ab390e29bae3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1098,7 +1098,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: f5a054c9fde215548a5390afae6a5057, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1393,7 +1393,7 @@ MonoBehaviour:
   rocket: {fileID: 4648046075148658819, guid: 8c97fc9efb12b054bb4b98fc9fcfa47d, type: 3}
   rocket2: {fileID: 4959065024253635296, guid: 48dc4a3ad6078ab4fb81f7a8b9a02945, type: 3}
   rocket3: {fileID: 5469044686963139146, guid: 8017361f092a2f14eb79345ba3f80af6, type: 3}
-  controlRocket: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5,
+  controlRocket: {fileID: 8172000909159954695, guid: fa771199177d13e47b7b767706ab6b12,
     type: 3}
   speed: 0
 --- !u!1 &418277017
@@ -2005,7 +2005,7 @@ MonoBehaviour:
   keyMoveSpeed: 4.36
   operate: 1
   isKeyOperate: 1
-  target: {fileID: 588015670}
+  target: {fileID: 0}
   attachToTarget: 0
   controlObject: {fileID: 1901476846}
   attachToControlObject: 1
@@ -2154,7 +2154,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  offsetPosition: {x: 3, y: 5, z: -15}
+  offsetPosition: {x: 3, y: 10, z: -15}
   rotateSpeedCoeff: 0
   dst: 0
 --- !u!114 &534669908
@@ -2466,7 +2466,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &588015671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2479,6 +2479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  needTurnToTarget: 0
   isLaunchedRocket: 0
   target: {fileID: 0}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -2549,6 +2550,14 @@ MonoBehaviour:
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
   dCoeffUpDown: 1
+  tickCountForRocketOffEngine: 500
+  PDResultDistanceAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PDResultDistanceAnimationCurveValue: 0
 --- !u!54 &588015672
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2668,7 +2677,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 588015670}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 10, y: 5.41, z: 15}
+  m_LocalPosition: {x: 0, y: 5.41, z: 15}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1097166961}
@@ -2677,7 +2686,7 @@ Transform:
   - {fileID: 1231223595}
   - {fileID: 162403945}
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &591313178
 GameObject:
@@ -3470,7 +3479,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!120 &816366618
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -6777,6 +6786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  needTurnToTarget: 0
   isLaunchedRocket: 0
   target: {fileID: 0}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -6847,6 +6857,14 @@ MonoBehaviour:
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
   dCoeffUpDown: 1
+  tickCountForRocketOffEngine: 500
+  PDResultDistanceAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PDResultDistanceAnimationCurveValue: 0
 --- !u!54 &1469863175
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7728,7 +7746,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1639650590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7741,8 +7759,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  needTurnToTarget: 1
   isLaunchedRocket: 0
-  target: {fileID: 0}
+  target: {fileID: 1901476846}
   actualAcceleration: {x: 0, y: 0, z: 0}
   prevAcceleration: {x: 0, y: 0, z: 0}
   actualJerk: {x: 0, y: 0, z: 0}
@@ -7779,7 +7798,7 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 0
   hp: 100
-  tractionVectorControlCoeff: 0.2
+  tractionVectorControlCoeff: 0.1
   maxControlPlaneAngle: 45
   maxControlPlaneRotationSpeed: 5
   engineThrustCoeff: 1700
@@ -7797,13 +7816,76 @@ MonoBehaviour:
   controlPlaneDragEngineWindCoeff: 0
   correctPDResultAnimationCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.015930265
+      value: 0.99884033
+      inSlope: 1.8586721
+      outSlope: 1.8586721
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.81333256
+      value: 2.540168
+      inSlope: 0.67244613
+      outSlope: 0.67244613
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 4.0236845
+      value: 3.7152636
+      inSlope: 0.021329088
+      outSlope: 0.021329088
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 10.365461
+      value: 3.7661982
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 29.97107
+      value: 0.9902592
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
   correctPDResultTractionAnimationCurve:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: 1.875154
+      value: 0.30145264
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1000
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -7811,6 +7893,14 @@ MonoBehaviour:
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
   dCoeffUpDown: 1
+  tickCountForRocketOffEngine: 500
+  PDResultDistanceAnimationCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PDResultDistanceAnimationCurveValue: 0
 --- !u!54 &1639650591
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7823,7 +7913,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -7929,8 +8019,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639650589}
-  m_LocalRotation: {x: 0.018324912, y: 0, z: 0, w: 0.9998321}
-  m_LocalPosition: {x: 0, y: 17.78, z: 803}
+  m_LocalRotation: {x: 0, y: 0.76604444, z: 0, w: 0.64278764}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 591313179}
@@ -7939,8 +8029,8 @@ Transform:
   - {fileID: 7148637}
   - {fileID: 42850469}
   m_Father: {fileID: 0}
-  m_RootOrder: 15
-  m_LocalEulerAnglesHint: {x: 2.1, y: 0, z: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 100, z: 0}
 --- !u!1 &1675879523
 GameObject:
   m_ObjectHideFlags: 0
@@ -8461,8 +8551,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  needTurnToTarget: 0
   isLaunchedRocket: 0
-  target: {fileID: 0}
+  target: {fileID: 1639650589}
   actualAcceleration: {x: 0, y: 0, z: 0}
   prevAcceleration: {x: 0, y: 0, z: 0}
   actualJerk: {x: 0, y: 0, z: 0}
@@ -8499,10 +8590,10 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 0
   hp: 100
-  tractionVectorControlCoeff: 0.2
+  tractionVectorControlCoeff: 0.1
   maxControlPlaneAngle: 45
   maxControlPlaneRotationSpeed: 5
-  engineThrustCoeff: 5700
+  engineThrustCoeff: 1700
   engineThrustKG: 0
   controlPlaneDragCoeff: 0.3
   upDownCorpusDragCoeff: 10
@@ -8594,6 +8685,23 @@ MonoBehaviour:
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
   dCoeffUpDown: 1
+  tickCountForRocketOffEngine: 500
+  PDResultDistanceAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 8624.27
+      value: 0.5577417
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PDResultDistanceAnimationCurveValue: 0
 --- !u!54 &1901476848
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8712,8 +8820,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901476846}
-  m_LocalRotation: {x: 0, y: 0.76604444, z: 0, w: 0.64278764}
-  m_LocalPosition: {x: 2000, y: 6, z: 50}
+  m_LocalRotation: {x: 0, y: 0.73491466, z: -0, w: -0.67815965}
+  m_LocalPosition: {x: 2500, y: 10, z: 14.17}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1698825972}
@@ -8723,7 +8831,7 @@ Transform:
   - {fileID: 279484715}
   m_Father: {fileID: 0}
   m_RootOrder: 13
-  m_LocalEulerAnglesHint: {x: 0, y: 100, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 265.4, z: 0}
 --- !u!1 &1918963075
 GameObject:
   m_ObjectHideFlags: 0

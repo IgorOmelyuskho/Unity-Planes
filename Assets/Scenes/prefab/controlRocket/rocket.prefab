@@ -103,7 +103,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1148350815824479751}
-  m_LocalRotation: {x: 0, y: -0.24682978, z: 0, w: 0.9690589}
+  m_LocalRotation: {x: 0, y: -0.25502393, z: 0, w: 0.96693474}
   m_LocalPosition: {x: -3000, y: 14.42, z: 58}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
@@ -113,7 +113,7 @@ Transform:
   - {fileID: 1148350816194947968}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -28.58, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -29.55, z: 0}
 --- !u!120 &1148350815824479748
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -156,13 +156,13 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 1
+    widthMultiplier: 1.6078491
     widthCurve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 1
+        time: 0.26865768
+        value: 0.63513184
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -239,6 +239,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLaunchedRocket: 0
   target: {fileID: 0}
+  actualAcceleration: {x: 0, y: 0, z: 0}
+  prevAcceleration: {x: 0, y: 0, z: 0}
+  actualJerk: {x: 0, y: 0, z: 0}
   localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 1.1
   distForAddAileronForce: 0
@@ -272,7 +275,7 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 1
   hp: 100
-  tractionVectorControlCoeff: 0.2
+  tractionVectorControlCoeff: 1
   maxControlPlaneAngle: 45
   maxControlPlaneRotationSpeed: 5
   engineThrustCoeff: 155
@@ -288,10 +291,64 @@ MonoBehaviour:
   forwardWingDragCoeff: 0
   angularDragCoeff: 0.02
   controlPlaneDragEngineWindCoeff: 0
-  pCoeffLeftRight: 7
-  dCoeffLeftRight: 0.09
-  pCoeffUpDown: 7
-  dCoeffUpDown: 0.09
+  pCoeffLeftRight: 2
+  dCoeffLeftRight: 0.1
+  pCoeffUpDown: 2
+  dCoeffUpDown: 0.1
+  tickCountForRocketOffEngine: 500
+  PDResultDistanceAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 4.7719193
+      value: 10.088957
+      inSlope: -0.014451631
+      outSlope: -0.014451631
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 189.60995
+      value: 7.4177456
+      inSlope: -0.011140192
+      outSlope: -0.011140192
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 605.89606
+      value: 4.158745
+      inSlope: -0.0050099604
+      outSlope: -0.0050099604
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1980.1255
+      value: 1.1475763
+      inSlope: -0.000287535
+      outSlope: -0.000287535
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 8624.276
+      value: 0.57118505
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  PDResultDistanceAnimationCurveValue: 0
+  needTurnToTarget: 0
 --- !u!1 &1148350816194947969
 GameObject:
   m_ObjectHideFlags: 0

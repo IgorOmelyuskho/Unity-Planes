@@ -7,6 +7,9 @@ using UnityEngine.Rendering;
 //http://www.zaretto.com/sites/zaretto.com/files/missile-aerodynamic-data/AIM120C5-Performance-Assessment-rev2.pdf
 public class controlObject : MonoBehaviour
 {
+    // use when controlObject is bot and must turn to some object, target 
+    public bool needTurnToTarget;
+
     Camera cam;
     float mouseSensitivity = 23;
     RectTransform forwardDirection;
@@ -55,7 +58,7 @@ public class controlObject : MonoBehaviour
     // public
 
     public bool isLaunchedRocket = false; // use for rocket, public for use in rocketLauncher script
-    public GameObject target; // public for use in rocketLauncher script
+    public GameObject target; // public for use in rocketLauncher script and if self must turn to target
 
     public Vector3 actualAcceleration;
     public Vector3 prevAcceleration;
@@ -134,6 +137,11 @@ public class controlObject : MonoBehaviour
     public float pCoeffUpDown;
     public float dCoeffUpDown;
 
+    // use for LaunchedRocket
+    public int tickCountForRocketOffEngine = 500;
+    public AnimationCurve PDResultDistanceAnimationCurve;
+    public float PDResultDistanceAnimationCurveValue;
+
     void Start()
     {
         prefabForShowInfo = GameObject.Find("for show info near obj");
@@ -194,7 +202,7 @@ public class controlObject : MonoBehaviour
 
         if (isPlayer)
         {
-            shoot();
+            shoot(false);
             showAimPoint();
             calcHP();
         }
@@ -202,7 +210,7 @@ public class controlObject : MonoBehaviour
         velocity = rb.velocity;
         velocityMaggnitude = rb.velocity.magnitude;
 
-        if (moveLeft || moveRight || moveDown || moveUp)
+        if ((moveLeft || moveRight || moveDown || moveUp) && !needTurnToTarget)
             rotateControlPlaneByKey();
         else
             rotateControlPlaneByMouse();
@@ -239,8 +247,8 @@ public class controlObject : MonoBehaviour
         if (isLaunchedRocket)
             drawAimPosForRocket();
 
-        if (!isLaunchedRocket)
-            handleKeyInput(); // for bot can turn
+        if (!isLaunchedRocket && !needTurnToTarget)
+            handleKeyInput(); // for bot can turn if !needTurnToTarget
 
         if (isPlayer)
         {
@@ -465,10 +473,10 @@ public class controlObject : MonoBehaviour
         }   
     }
 
-    void shoot()
+    void shoot(bool shootWithoutCondition)
     {
         counterForShoot++;
-        if (Input.GetMouseButton(0) && counterForShoot > 0) // GetMouseButton GetMouseButtonDown
+        if ((Input.GetMouseButton(0) && counterForShoot > 0) || shootWithoutCondition) // GetMouseButton GetMouseButtonDown
         {
             counterForShoot = 0;
             Bullet2 bulletClone = Instantiate(bullet, new Vector3(transform.position.x, transform.position.y, transform.position.z) + transform.forward * 1, transform.rotation);
@@ -494,7 +502,7 @@ public class controlObject : MonoBehaviour
 
     void offRocketEngine()
     {
-        if (isLaunchedRocket && trailRenderer && counter > 30000)
+        if (isLaunchedRocket && trailRenderer && counter > tickCountForRocketOffEngine)
         {
             power = 0;
             trailRenderer.gameObject.SetActive(false);
@@ -503,7 +511,7 @@ public class controlObject : MonoBehaviour
 
     void destroyRocket()
     {
-        if (isLaunchedRocket && counter > 250000)
+        if (isLaunchedRocket && counter > 2500)
             destroyLaunchedRocket();
 
         if (isLaunchedRocket && !target)
@@ -571,7 +579,7 @@ public class controlObject : MonoBehaviour
             else
                 targetSpeed = Vector3.zero;
 
-            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity, Vector3.zero);
+            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity, target.GetComponent<controlObject>().actualAcceleration);
             lineRenderer.SetPosition(0, target.transform.position);
             lineRenderer.SetPosition(1, aimPosition);
         }
@@ -766,6 +774,42 @@ public class controlObject : MonoBehaviour
             yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.up, true);
             xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.right, true);
         }
+        else if (needTurnToTarget && target)
+        {
+            Vector3 targetSpeed = target.GetComponent<Rigidbody>().velocity;
+            Vector3 aimPositionForBot = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity, target.GetComponent<controlObject>().actualAcceleration);
+            // amendment - shoot little forward than aimPositionForBot, because plane does not have time to turn
+            Vector3 amendment = (aimPositionForBot - target.transform.position) * 0.15f;
+            aimPositionForBot += amendment;
+            Vector3 direction = aimPositionForBot - transform.position;
+            float angle = Vector3.Angle(direction, transform.forward);
+            if (angle < 2)
+            {
+                shoot(true);
+            }
+            yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
+            xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.right, true);
+            leftRoll = false;
+            rightRoll = false;
+            float minAngleForUseRoll = 7;
+            Vector3 projectionFwdToPlane = Vector3.ProjectOnPlane(transform.forward, direction);
+            Vector3 projectionUpToPlane = Vector3.ProjectOnPlane(transform.up, direction);
+
+            float angleBtw2Vectors = Vector3.Angle(projectionFwdToPlane, projectionUpToPlane);
+            float signedAngleBtw2Vectors = Vector3.SignedAngle(projectionFwdToPlane, projectionUpToPlane, direction);
+
+            if (angle > minAngleForUseRoll)
+            {
+                yAngleBetweenForwardAndDirectionCircle = 0; // left-right
+            }
+            if (angleBtw2Vectors + minAngleForUseRoll < 180 && angle > minAngleForUseRoll)
+            {
+                if (signedAngleBtw2Vectors > 0)
+                    leftRoll = true;
+                else
+                    rightRoll = true;
+            }
+        }
         else
         {
             Vector3 directionCircleDir = directionCircleInWorldWorldPosition - transform.position;
@@ -798,16 +842,11 @@ public class controlObject : MonoBehaviour
             PDUpDownResult    *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
             PDLeftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
 
-            if (Vector3.Distance(transform.position, aimPosition) > 4000)
-            {
-                PDUpDownResult *= 0.2f;
-                PDLeftRightResult *= 0.2f;
-            }
-            else
-            {
-                PDUpDownResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
-                PDLeftRightResult *= 1 - ((Vector3.Distance(transform.position, aimPosition)) / 5000);
-            }
+            PDResultDistanceAnimationCurveValue = PDResultDistanceAnimationCurve.Evaluate(Vector3.Distance(transform.position, aimPosition));
+            if (counter > tickCountForRocketOffEngine)
+                PDResultDistanceAnimationCurveValue *= 3;
+            PDUpDownResult    *= PDResultDistanceAnimationCurveValue;
+            PDLeftRightResult *= PDResultDistanceAnimationCurveValue;
         }       
 
         float upDownTargetAngle = Mathf.Clamp(PDUpDownResult, -maxControlPlaneAngle, maxControlPlaneAngle);
