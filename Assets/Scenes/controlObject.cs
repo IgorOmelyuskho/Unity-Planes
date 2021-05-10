@@ -10,7 +10,7 @@ public class controlObject : MonoBehaviour
     // use when controlObject is bot and must turn to some object, target 
     public bool needTurnToTarget;
     float angleBtw2VectorsIfTurnToTarget;
-    float eleuronValue = 0;
+    float eleronValue = 0;
     public AnimationCurve rollSmoothingPIfNeedTurnToTargetCurve;
     public AnimationCurve rollSmoothingDIfNeedTurnToTargetCurve;
 
@@ -221,7 +221,7 @@ public class controlObject : MonoBehaviour
 
         addEngineForce();
         addCorpusForces();
-        addEleuronForces();
+        addEleronForces();
         addWingForces();
         addControlPlaneForces();
         if (isPropPlane)
@@ -243,7 +243,7 @@ public class controlObject : MonoBehaviour
     void Update()
     {
         //drawControlPlaneForces();
-        //drawEleuronForces();
+        //drawEleronForces();
         //drawCorpusForces();
         //drawWingForces();
         //drawEngineForce();
@@ -945,7 +945,7 @@ public class controlObject : MonoBehaviour
         rb.AddForceAtPosition(forceLeftRight, positionForAddForce);
     }
 
-    void addEleuronForces()
+    void addEleronForces()
     {
         Vector3 positionForAddForceLeftAileron = transform.position - transform.right * distForAddAileronForce;
         Vector3 positionForAddForceRightAileron = transform.position + transform.right * distForAddAileronForce;
@@ -956,19 +956,19 @@ public class controlObject : MonoBehaviour
 
         if (!needTurnToTarget)
         {
-            eleuronValue = Mathf.MoveTowards(eleuronValue, sign, speed * Time.deltaTime);
+            eleronValue = Mathf.MoveTowards(eleronValue, sign, speed * Time.deltaTime);
         }
         else
         {
             float p = rollSmoothingPIfNeedTurnToTargetCurve.Evaluate(angleBtw2VectorsIfTurnToTarget);
             float d = rollSmoothingDIfNeedTurnToTargetCurve.Evaluate(localAngularVelocity.z);
             float clamped = Mathf.Clamp(sign * p * d, -1, 1);
-            eleuronValue = Mathf.MoveTowards(eleuronValue, clamped, speed * Time.deltaTime);
+            eleronValue = Mathf.MoveTowards(eleronValue, clamped, speed * Time.deltaTime);
         }
 
-        // now eleuron forces and pane roll more smoothly
-        rb.AddForceAtPosition(-transform.up * eleuronValue * aileronsDrag, positionForAddForceLeftAileron);
-        rb.AddForceAtPosition(transform.up * eleuronValue * aileronsDrag, positionForAddForceRightAileron);
+        // now eleron forces and pane roll more smoothly
+        rb.AddForceAtPosition(-transform.up * eleronValue * aileronsDrag, positionForAddForceLeftAileron);
+        rb.AddForceAtPosition(transform.up * eleronValue * aileronsDrag, positionForAddForceRightAileron);
     }
 
     void addCorpusForces()
@@ -1053,7 +1053,7 @@ public class controlObject : MonoBehaviour
         UnityEngine.Debug.DrawLine(positionDrawForce, positionDrawForce + forceLeftRight, Color.yellow);
     }
 
-    void drawEleuronForces()
+    void drawEleronForces()
     {
         Vector3 positionDrawForce = transform.position - transform.forward * distForAddControlPlaneOrEngineForce;
         Vector3 end;
