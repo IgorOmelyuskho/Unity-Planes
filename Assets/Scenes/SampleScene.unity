@@ -2480,6 +2480,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   needTurnToTarget: 0
+  angleBtw2VectorsIfTurnToTarget: 0
+  rollSmoothingPIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rollSmoothingDIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   isLaunchedRocket: 0
   target: {fileID: 0}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -6787,6 +6800,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   needTurnToTarget: 0
+  angleBtw2VectorsIfTurnToTarget: 0
+  rollSmoothingPIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rollSmoothingDIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   isLaunchedRocket: 0
   target: {fileID: 0}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -7760,6 +7786,64 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   needTurnToTarget: 1
+  angleBtw2VectorsIfTurnToTarget: 0
+  rollSmoothingPIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -4.1585073
+      value: 0.4242585
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 179.18799
+      value: 0.84384537
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rollSmoothingDIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -250
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.9577026
+      value: 0.25608522
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 250
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   isLaunchedRocket: 0
   target: {fileID: 1901476846}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -7893,7 +7977,7 @@ MonoBehaviour:
   dCoeffLeftRight: 1.4
   pCoeffUpDown: 10
   dCoeffUpDown: 1
-  tickCountForRocketOffEngine: 500
+  tickCountForRocketOffEngine: 0
   PDResultDistanceAnimationCurve:
     serializedVersion: 2
     m_Curve: []
@@ -8020,7 +8104,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639650589}
   m_LocalRotation: {x: 0, y: 0.76604444, z: 0, w: 0.64278764}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
+  m_LocalPosition: {x: 0, y: 11.73, z: 6.27}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 591313179}
@@ -8551,7 +8635,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  needTurnToTarget: 0
+  needTurnToTarget: 1
+  angleBtw2VectorsIfTurnToTarget: 0
+  rollSmoothingPIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -4.1585073
+      value: 0.4242585
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 179.18799
+      value: 0.84384537
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rollSmoothingDIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -250
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1.9577026
+      value: 0.25608522
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 250
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   isLaunchedRocket: 0
   target: {fileID: 1639650589}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -8821,7 +8963,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901476846}
   m_LocalRotation: {x: 0, y: 0.73491466, z: -0, w: -0.67815965}
-  m_LocalPosition: {x: 2500, y: 10, z: 14.17}
+  m_LocalPosition: {x: -22.62, y: 10, z: 14.17}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1698825972}

@@ -9,6 +9,10 @@ public class controlObject : MonoBehaviour
 {
     // use when controlObject is bot and must turn to some object, target 
     public bool needTurnToTarget;
+    float angleBtw2VectorsIfTurnToTarget;
+    float eleuronValue = 0;
+    public AnimationCurve rollSmoothingPIfNeedTurnToTargetCurve;
+    public AnimationCurve rollSmoothingDIfNeedTurnToTargetCurve;
 
     Camera cam;
     float mouseSensitivity = 23;
@@ -795,19 +799,26 @@ public class controlObject : MonoBehaviour
             Vector3 projectionFwdToPlane = Vector3.ProjectOnPlane(transform.forward, direction);
             Vector3 projectionUpToPlane = Vector3.ProjectOnPlane(transform.up, direction);
 
-            float angleBtw2Vectors = Vector3.Angle(projectionFwdToPlane, projectionUpToPlane);
+            angleBtw2VectorsIfTurnToTarget = Vector3.Angle(projectionFwdToPlane, projectionUpToPlane);
             float signedAngleBtw2Vectors = Vector3.SignedAngle(projectionFwdToPlane, projectionUpToPlane, direction);
+
+            UnityEngine.Debug.DrawRay(target.transform.position, projectionFwdToPlane * 10000, new Color(0, 0, 255));
+            UnityEngine.Debug.DrawRay(target.transform.position, projectionUpToPlane * 10000, new Color(0, 194, 135));
 
             if (angle > minAngleForUseRoll)
             {
                 yAngleBetweenForwardAndDirectionCircle = 0; // left-right
             }
-            if (angleBtw2Vectors + minAngleForUseRoll < 180 && angle > minAngleForUseRoll)
+            if (angleBtw2VectorsIfTurnToTarget + minAngleForUseRoll < 180 && angle > minAngleForUseRoll)
             {
                 if (signedAngleBtw2Vectors > 0)
                     leftRoll = true;
                 else
                     rightRoll = true;
+            }
+            if (angleBtw2VectorsIfTurnToTarget > 90 && angle > 90 && xAngleBetweenForwardAndDirectionCircle < 0)
+            {
+                xAngleBetweenForwardAndDirectionCircle = -xAngleBetweenForwardAndDirectionCircle;
             }
         }
         else
@@ -940,17 +951,24 @@ public class controlObject : MonoBehaviour
         Vector3 positionForAddForceRightAileron = transform.position + transform.right * distForAddAileronForce;
 
         float aileronsDrag = velocity.magnitude * velocity.magnitude * aileronsDragCoeff; // * velocity * angle
+        float sign = leftRoll ? 1 : rightRoll ? -1 : 0;
+        float speed = 10;
 
-        if (leftRoll)
+        if (!needTurnToTarget)
         {
-            rb.AddForceAtPosition(-transform.up * aileronsDrag, positionForAddForceLeftAileron);
-            rb.AddForceAtPosition(transform.up * aileronsDrag, positionForAddForceRightAileron);
+            eleuronValue = Mathf.MoveTowards(eleuronValue, sign, speed * Time.deltaTime);
         }
-        if (rightRoll)
+        else
         {
-            rb.AddForceAtPosition(transform.up * aileronsDrag, positionForAddForceLeftAileron);
-            rb.AddForceAtPosition(-transform.up * aileronsDrag, positionForAddForceRightAileron);
+            float p = rollSmoothingPIfNeedTurnToTargetCurve.Evaluate(angleBtw2VectorsIfTurnToTarget);
+            float d = rollSmoothingDIfNeedTurnToTargetCurve.Evaluate(localAngularVelocity.z);
+            float clamped = Mathf.Clamp(sign * p * d, -1, 1);
+            eleuronValue = Mathf.MoveTowards(eleuronValue, clamped, speed * Time.deltaTime);
         }
+
+        // now eleuron forces and pane roll more smoothly
+        rb.AddForceAtPosition(-transform.up * eleuronValue * aileronsDrag, positionForAddForceLeftAileron);
+        rb.AddForceAtPosition(transform.up * eleuronValue * aileronsDrag, positionForAddForceRightAileron);
     }
 
     void addCorpusForces()
