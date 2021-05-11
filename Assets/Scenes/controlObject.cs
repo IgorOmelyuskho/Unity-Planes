@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 //http://www.zaretto.com/sites/zaretto.com/files/missile-aerodynamic-data/AIM120C5-Performance-Assessment-rev2.pdf
 public class controlObject : MonoBehaviour
 {
+    public float turnRadius;
     // use when controlObject is bot and must turn to some object, target 
     public bool needTurnToTarget;
     float angleBtw2VectorsIfTurnToTarget;
@@ -228,6 +229,7 @@ public class controlObject : MonoBehaviour
             addControlPlaneForcesWithEngineWind();
 
         calcAcceleration();
+        calcTurnRadius();
         calcJerk();
         calcAttackAngle();
 
@@ -783,7 +785,7 @@ public class controlObject : MonoBehaviour
             Vector3 targetSpeed = target.GetComponent<Rigidbody>().velocity;
             Vector3 aimPositionForBot = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity, target.GetComponent<controlObject>().actualAcceleration);
             // amendment - shoot little forward than aimPositionForBot, because plane does not have time to turn
-            Vector3 amendment = (aimPositionForBot - target.transform.position) * 0.15f;
+            Vector3 amendment = (aimPositionForBot - target.transform.position) * 0.15f; // or maybe targetSpeed * 1.15 in Shared.CalculateAim
             aimPositionForBot += amendment;
             Vector3 direction = aimPositionForBot - transform.position;
             float angle = Vector3.Angle(direction, transform.forward);
@@ -1138,6 +1140,11 @@ public class controlObject : MonoBehaviour
 
         if (actualAcceleration.magnitude / Physics.gravity.magnitude > maxAcceleration)
             maxAcceleration = actualAcceleration.magnitude / Physics.gravity.magnitude;
+    }
+
+    void calcTurnRadius()
+    {
+        turnRadius = rb.velocity.magnitude * rb.velocity.magnitude / actualAcceleration.magnitude;
     }
 
     void calcJerk()

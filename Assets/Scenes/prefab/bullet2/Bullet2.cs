@@ -13,9 +13,11 @@ public class Bullet2 : MonoBehaviour
     public int iterationCt = 4;
     public GameObject owner;
     public float hpHit = 10f;
+    GameObject prefabForExplosion;
 
     void Start()
     {
+        prefabForExplosion = GameObject.Find("Explosion");
         //target = GameObject.FindGameObjectWithTag("TargetTag");
         step();
     }
@@ -40,7 +42,7 @@ public class Bullet2 : MonoBehaviour
                     Vector3 buulletPosition = transform.position + (speedMagnitude / iterationCt) * speed.normalized * j * Time.fixedDeltaTime;
                     if ((buulletPosition - hitWithBulletOrRocketObject.transform.position).magnitude < distWhenBulletHitTarget)
                     {
-                        Destroy(gameObject);
+                        destroyBullet();
                         hitWithBulletOrRocketObject.GetComponent<controlObject>().hp -= hpHit;
                         break;
                     }
@@ -50,12 +52,19 @@ public class Bullet2 : MonoBehaviour
 
         if (i > 1000)
         {
-            Destroy(gameObject);
+            destroyBullet();
         }
 
         //speed.y -= Shared.gravity * Time.fixedDeltaTime;
         speedMagnitude = speed.magnitude;
         //transform.Translate(Time.fixedDeltaTime * speed); // not work
         transform.position += Time.fixedDeltaTime * speed;
+    }
+
+    void destroyBullet()
+    {
+        GameObject cloneExplosion = Instantiate(prefabForExplosion, gameObject.transform.position, Quaternion.identity);
+        Destroy(gameObject);
+        Destroy(cloneExplosion, 5);
     }
 }

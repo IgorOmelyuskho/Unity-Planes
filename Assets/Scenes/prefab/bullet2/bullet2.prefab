@@ -97,4 +97,4 @@ MonoBehaviour:
   distWhenBulletHitTarget: 3
   iterationCt: 4
   owner: {fileID: 0}
-  hpHit: 10
+  hpHit: 0.5
