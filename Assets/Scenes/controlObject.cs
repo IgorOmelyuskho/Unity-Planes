@@ -147,6 +147,9 @@ public class controlObject : MonoBehaviour
     public AnimationCurve PDResultDistanceAnimationCurve;
     public float PDResultDistanceAnimationCurveValue;
 
+    // use if isPlayer
+    public bool correctOnParallax = true;
+
     void Start()
     {
         prefabForShowInfo = GameObject.Find("for show info near obj");
@@ -586,8 +589,15 @@ public class controlObject : MonoBehaviour
                 targetSpeed = Vector3.zero;
 
             Vector3 aimPosition = Shared.CalculateAim(target.transform.position, targetSpeed, transform.position, bullet.initBulletSpeed, rb.velocity, target.GetComponent<controlObject>().actualAcceleration);
+
+            Vector3 correct = Vector3.zero;
+            if (correctOnParallax)
+            {
+                correct = cam.GetComponent<CameraOperate>().correctOnParallax;
+            }
+
             lineRenderer.SetPosition(0, target.transform.position);
-            lineRenderer.SetPosition(1, aimPosition);
+            lineRenderer.SetPosition(1, aimPosition + correct);
         }
         else
         {

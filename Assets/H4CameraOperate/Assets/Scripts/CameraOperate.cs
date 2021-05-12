@@ -49,7 +49,7 @@ public class CameraOperate : MonoBehaviour
     public bool attachToControlObject = false;
     public bool lookAtControlObjectForward = true;
     public bool lookAtControlObjectCenter = false;
-    public bool controlObjectOffset = true;
+    public bool useOffset = true;
 
     public GameObject antiAircraft;
     public bool attachToAntiAircraft = true;
@@ -77,6 +77,8 @@ public class CameraOperate : MonoBehaviour
     float yCamRotate = 0.0f;
 
     public float dst = 0;
+
+    public Vector3 correctOnParallax;
 
     // Start is called before the first frame update
     void Start()
@@ -226,6 +228,7 @@ public class CameraOperate : MonoBehaviour
 
     void customCamLogic(Vector3 deltaPosition)
     {
+        correctOnParallax = Vector3.zero;
         float fwd = 39f;
         float up = 5f;
         Vector3 camOffset;
@@ -250,14 +253,10 @@ public class CameraOperate : MonoBehaviour
         }
         else if (attachToControlObject == true)
         {
-            if (controlObjectOffset)
-            {
+            if (useOffset)
                 m_transform.position = controlObject.transform.position + offsetPosition;
-            }
             else
-            {
                 m_transform.position = controlObject.transform.position - camOffset;
-            }
 
             Camera.main.fieldOfView = fov;
             GameObject target = controlObject.GetComponent<controlObject>().target;
@@ -286,13 +285,17 @@ public class CameraOperate : MonoBehaviour
         {
             Vector3 antiAircraftfwd = antiAircraft.transform.forward;
             Vector3 antiAircraftUp = antiAircraft.transform.up;
-            m_transform.position = antiAircraft.transform.position
-                + new Vector3(0, 4, 0);
-                //- antiAircraftfwd * 15 + antiAircraftUp * 2;
+            camOffset = new Vector3(0, 4, 0);
+            m_transform.position = antiAircraft.transform.position + camOffset;
             if (lookAtAntiAircraftForward)
             {
                 m_transform.LookAt(antiAircraft.transform.forward * 1000000);
             }
+
+            if (useOffset)
+                m_transform.position = antiAircraft.transform.position + offsetPosition;
+            else
+                m_transform.position = antiAircraft.transform.position - camOffset;
         }
         else if (lookAtTarget == true)
         {
@@ -302,6 +305,11 @@ public class CameraOperate : MonoBehaviour
         {
             m_transform.position += deltaPosition;
         }
+
+        if (useOffset)
+            correctOnParallax = offsetPosition;
+        else
+            correctOnParallax = -camOffset;
 
         dst = (transform.position - controlObject.transform.position).magnitude;
     }

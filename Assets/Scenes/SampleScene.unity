@@ -1674,17 +1674,17 @@ MonoBehaviour:
   keyMoveSpeed: 4.36
   operate: 1
   isKeyOperate: 1
-  target: {fileID: 0}
+  target: {fileID: 948023814}
   attachToTarget: 0
   controlObject: {fileID: 1901476846}
   attachToControlObject: 1
   lookAtControlObjectForward: 1
   lookAtControlObjectCenter: 1
-  controlObjectOffset: 0
+  useOffset: 0
   antiAircraft: {fileID: 816366617}
-  attachToAntiAircraft: 0
+  attachToAntiAircraft: 1
   lookAtAntiAircraftForward: 0
-  lookAtTarget: 1
+  lookAtTarget: 0
   fieldOfViewAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -1826,6 +1826,7 @@ MonoBehaviour:
   offsetPosition: {x: 3, y: 10, z: -15}
   rotateSpeedCoeff: 0
   dst: 0
+  correctOnParallax: {x: 0, y: 0, z: 0}
 --- !u!114 &534669908
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2568,7 +2569,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!120 &816366618
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -2576,7 +2577,7 @@ LineRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 816366617}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2676,7 +2677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24bd02654d693524b866d22e945e414a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1901476846}
+  target: {fileID: 948023814}
   bullet: {fileID: 114638880955100784, guid: e7ec96587d678b44487bc44f4539c3e9, type: 3}
   lineRenderer: {fileID: 816366618}
   flyTimeToTarget: 0
@@ -2687,6 +2688,7 @@ MonoBehaviour:
   verticalAimAngle: 0
   x: 0
   y: 0
+  correctOnParallax: 1
 --- !u!65 &816366620
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3240,7 +3242,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 948023814}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20, y: 100, z: 2000}
+  m_LocalPosition: {x: -20, y: 100, z: 500}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 1380468499}
@@ -5479,7 +5481,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 1639650592}
   UICam: {fileID: 1351212433}
   initSpeed: 350
-  power: 100
+  power: 63.8
   engineThrust: 0
   hpBar: {fileID: 191080405}
   rectTransformDirectionCircle: {fileID: 2102348715}
@@ -5604,6 +5606,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   PDResultDistanceAnimationCurveValue: 0
+  correctOnParallax: 1
 --- !u!54 &1639650591
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6245,7 +6248,7 @@ MonoBehaviour:
   tractionVectorControlCoeff: 0.15
   maxControlPlaneAngle: 45
   maxControlPlaneRotationSpeed: 5
-  engineThrustCoeff: 1700
+  engineThrustCoeff: 5700
   engineThrustKG: 0
   controlPlaneDragCoeff: 0.3
   upDownCorpusDragCoeff: 10
@@ -6354,6 +6357,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   PDResultDistanceAnimationCurveValue: 0
+  correctOnParallax: 1
 --- !u!54 &1901476848
 Rigidbody:
   m_ObjectHideFlags: 0

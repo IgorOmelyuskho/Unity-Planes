@@ -18,10 +18,17 @@ public class antiaircraft : MonoBehaviour
     public float verticalAimAngle;
     public float x;
     public float y;
+    RectTransform centerCircle;
+    Camera cam;
+
+    public bool correctOnParallax = true;
 
     void Start()
     {
         lineRenderer.positionCount = 2;
+        centerCircle = GameObject.Find("direction_where_look_control_object").GetComponent<RectTransform>();
+        centerCircle.transform.position = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, 0);
+        cam = Camera.main;
     }
 
     void FixedUpdate()
@@ -66,8 +73,8 @@ public class antiaircraft : MonoBehaviour
                 float yAimCoord = x * Mathf.Tan((verticalAimAngle - 90) * Mathf.Deg2Rad);
                 targetingPosition = target.transform.position +
                     targetSpeed * flyTimeToTarget +
-                    targetAcceleration * Mathf.Pow(flyTimeToTarget, 2) / 2 +
-                    targetJerk * Mathf.Pow(flyTimeToTarget, 3) / 6;
+                    targetAcceleration * Mathf.Pow(flyTimeToTarget, 2) / 2;
+                    //+ targetJerk * Mathf.Pow(flyTimeToTarget, 3) / 6;
                 aimPosition = new Vector3(targetingPosition.x, yAimCoord + transform.position.y, targetingPosition.z);
             }
 
@@ -110,8 +117,16 @@ public class antiaircraft : MonoBehaviour
 
     void lineRendererMethod()
     {
+        if (cam.GetComponent<CameraOperate>().attachToControlObject == true)
+            return;
+
+        Vector3 correct = Vector3.zero;
+        if (correctOnParallax)
+        {
+            correct = cam.GetComponent<CameraOperate>().correctOnParallax;
+        }
         lineRenderer.SetPosition(0, target.transform.position);
-        lineRenderer.SetPosition(1, aimPosition);
+        lineRenderer.SetPosition(1, aimPosition + correct);
 
         //lineRenderer.SetPosition(0, transform.position);
         //lineRenderer.SetPosition(1, aimPosition);
