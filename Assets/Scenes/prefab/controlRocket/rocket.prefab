@@ -237,6 +237,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a820d96172276104c8515a1ffe445c7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turnRadius: 0
+  needTurnToTarget: 0
+  rollSmoothingPIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  rollSmoothingDIfNeedTurnToTargetCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   isLaunchedRocket: 0
   target: {fileID: 0}
   actualAcceleration: {x: 0, y: 0, z: 0}
@@ -291,6 +305,54 @@ MonoBehaviour:
   forwardWingDragCoeff: 0
   angularDragCoeff: 0.02
   controlPlaneDragEngineWindCoeff: 0
+  correctPDResultAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -100
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 100
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  correctPDResultTractionAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -100
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 100
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   pCoeffLeftRight: 2
   dCoeffLeftRight: 0.1
   pCoeffUpDown: 2
@@ -348,7 +410,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   PDResultDistanceAnimationCurveValue: 0
-  needTurnToTarget: 0
+  correctOnParallax: 1
 --- !u!1 &1148350816194947969
 GameObject:
   m_ObjectHideFlags: 0
