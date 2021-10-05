@@ -772,7 +772,7 @@ public class controlObject : MonoBehaviour
         }
 
         float PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown, dCoeffUpDown);
-        float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight);
+        float PDLrftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight, dCoeffLeftRight) ;
 
         // so that at high speeds it does not shake
         PDUpDownResult    *= 1 - (rb.velocity.magnitude / 2000);
@@ -781,8 +781,8 @@ public class controlObject : MonoBehaviour
         // so that the rocket does not spin in place
         if (isLaunchedRocket && target)
         {
-            PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
-            PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
+            //PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
+            //PDLrftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
 
             PDUpDownResult    *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
             PDLrftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;

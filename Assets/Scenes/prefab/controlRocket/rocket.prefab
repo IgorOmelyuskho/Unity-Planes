@@ -239,6 +239,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isLaunchedRocket: 0
   target: {fileID: 0}
+  actualAcceleration: {x: 0, y: 0, z: 0}
+  prevAcceleration: {x: 0, y: 0, z: 0}
+  actualJerk: {x: 0, y: 0, z: 0}
   localAngularVelocity: {x: 0, y: 0, z: 0}
   distForAddControlPlaneOrEngineForce: 1.1
   distForAddAileronForce: 0
@@ -272,7 +275,7 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 1
   hp: 100
-  tractionVectorControlCoeff: 0.2
+  tractionVectorControlCoeff: 0.5
   maxControlPlaneAngle: 45
   maxControlPlaneRotationSpeed: 5
   engineThrustCoeff: 155

@@ -30,9 +30,10 @@ public class rocketLauncher : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X) && Shared.player)
         {
-            GameObject rocketClone = Instantiate(controlRocket, new Vector3(transform.position.x, transform.position.y, transform.position.z) - transform.up * 1.0f, transform.rotation);
+            Vector3 pos = Shared.player.transform.position - 1500 * Shared.player.transform.forward;
+            GameObject rocketClone = Instantiate(controlRocket, pos, Shared.player.transform.rotation);
             rocketClone.GetComponent<controlObject>().isLaunchedRocket = true;
-            rocketClone.GetComponent<controlObject>().rb.velocity = Vector3.zero;
+            rocketClone.GetComponent<controlObject>().rb.velocity = Shared.player.GetComponent<Rigidbody>().velocity;
             rocketClone.GetComponent<controlObject>().target = Shared.player;
             //rocketClone.GetComponent<controlObject>().rocketOwner = gameObject;
             Shared.player.GetComponent<controlObject>().addObjToInfoNearObjList(rocketClone);
