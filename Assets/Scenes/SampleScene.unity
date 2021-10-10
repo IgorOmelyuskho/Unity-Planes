@@ -1175,7 +1175,10 @@ MonoBehaviour:
   rocket3: {fileID: 5469044686963139146, guid: 8017361f092a2f14eb79345ba3f80af6, type: 3}
   controlRocket: {fileID: 8172000909159954695, guid: fa771199177d13e47b7b767706ab6b12,
     type: 3}
+  controlRocket2: {fileID: 8334356394590304442, guid: 322ed1a9da6a231478f78146a780e4cb,
+    type: 3}
   speed: 0
+  lookAtPlayer: 1
 --- !u!1 &418277017
 GameObject:
   m_ObjectHideFlags: 0
@@ -5393,7 +5396,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1639650590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5481,7 +5484,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 1639650592}
   UICam: {fileID: 1351212433}
   initSpeed: 350
-  power: 63.8
+  power: 100
   engineThrust: 0
   hpBar: {fileID: 191080405}
   rectTransformDirectionCircle: {fileID: 2102348715}
@@ -5619,7 +5622,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -6218,12 +6221,12 @@ MonoBehaviour:
   tensor1: {x: 1, y: 1, z: 0.2}
   rb: {fileID: 1901476848}
   bullet: {fileID: 114246007921454402, guid: 67bdca0e39ea5ba4a94d31afc776f272, type: 3}
-  rocket: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5, type: 3}
+  rocket: {fileID: 8172000909159954695, guid: fa771199177d13e47b7b767706ab6b12, type: 3}
   prefabForShowInfo: {fileID: 525918521}
   lineRenderer: {fileID: 1901476849}
   UICam: {fileID: 1351212433}
   initSpeed: 350
-  power: 100
+  power: 32.5
   engineThrust: 0
   hpBar: {fileID: 191080405}
   rectTransformDirectionCircle: {fileID: 2102348715}
