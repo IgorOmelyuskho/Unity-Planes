@@ -463,7 +463,16 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -100
+      time: -180
+      value: 30
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: -0.31746036
       value: 1
       inSlope: 0
       outSlope: 0
@@ -472,8 +481,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 100
-      value: 1
+      time: 180
+      value: 30
       inSlope: 0
       outSlope: 0
       tangentMode: 136
@@ -507,17 +516,17 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  pCoeffLeftRight: 15
+  pCoeffLeftRight: 3
   dCoeffLeftRight: 0
-  pCoeffUpDown: 15
+  pCoeffUpDown: 3
   dCoeffUpDown: 0
-  tickCountForRocketOffEngine: 250000
+  tickCountForRocketOffEngine: 700
   PDResultDistanceAnimationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -100
-      value: 1
+      time: 0
+      value: 5
       inSlope: 0
       outSlope: 0
       tangentMode: 136
@@ -525,7 +534,7 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 100
+      time: 5000
       value: 1
       inSlope: 0
       outSlope: 0
@@ -537,6 +546,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   PDResultDistanceAnimationCurveValue: 0
+  useOnlyAngleForAiming: 1
   correctOnParallax: 1
 --- !u!1 &8334356394650321964
 GameObject:

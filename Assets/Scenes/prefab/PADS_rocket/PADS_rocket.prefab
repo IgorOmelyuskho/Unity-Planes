@@ -366,7 +366,7 @@ MonoBehaviour:
   dCoeffLeftRight: 0
   pCoeffUpDown: 15
   dCoeffUpDown: 0
-  tickCountForRocketOffEngine: 250000
+  tickCountForRocketOffEngine: 700
   PDResultDistanceAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -392,6 +392,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   PDResultDistanceAnimationCurveValue: 0
+  useOnlyAngleForAiming: 0
   correctOnParallax: 1
 --- !u!1 &8172000909263246465
 GameObject:

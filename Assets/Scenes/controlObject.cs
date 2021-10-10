@@ -146,6 +146,7 @@ public class controlObject : MonoBehaviour
     public int tickCountForRocketOffEngine = 500;
     public AnimationCurve PDResultDistanceAnimationCurve;
     public float PDResultDistanceAnimationCurveValue;
+    public bool useOnlyAngleForAiming;
 
     // use if isPlayer
     public bool correctOnParallax = true;
@@ -520,7 +521,7 @@ public class controlObject : MonoBehaviour
 
     void destroyRocket()
     {
-        if (isLaunchedRocket && counter > 2500)
+        if (isLaunchedRocket && counter > 1000)
             destroyLaunchedRocket();
 
         if (isLaunchedRocket && !target)
@@ -768,8 +769,10 @@ public class controlObject : MonoBehaviour
 
     void rotateControlPlaneByMouse() // use for rocket aiming too (not only rotate by mouse)
     {
-        float yAngleBetweenForwardAndDirectionCircle;
-        float xAngleBetweenForwardAndDirectionCircle;
+        float yAngleBetweenForwardAndDirectionCircle = 0;
+        float xAngleBetweenForwardAndDirectionCircle = 0;
+        float prevYAngle = 0;
+        float prevXAngle = 0;
 
         Vector3 aimPosition = Vector3.zero;
 
@@ -787,8 +790,21 @@ public class controlObject : MonoBehaviour
             //yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
             //xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.right, true);
 
-            yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.up, true);
-            xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.right, true);
+
+            if (useOnlyAngleForAiming)
+            {
+                Vector3 direction2 = target.transform.position - transform.position;
+                prevYAngle = yAngleBetweenForwardAndDirectionCircle;
+                prevXAngle = xAngleBetweenForwardAndDirectionCircle;
+                yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction2, rb.velocity, transform.up, true);
+                xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction2, rb.velocity, transform.right, true);
+                float yAngleSpeed = prevYAngle - yAngleBetweenForwardAndDirectionCircle;
+                float xAngleSpeed = prevXAngle - xAngleBetweenForwardAndDirectionCircle;
+            } else
+            {
+                yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.up, true);
+                xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, rb.velocity, transform.right, true);
+            }
         }
         else if (needTurnToTarget && target)
         {
@@ -849,8 +865,19 @@ public class controlObject : MonoBehaviour
             correctResultLeftRight *= value;
         }
 
-        float PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown    * correctResultUpDown,    dCoeffUpDown);
-        float PDLeftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight * correctResultLeftRight, dCoeffLeftRight);
+        float PDUpDownResult;
+        float PDLeftRightResult;
+        if (useOnlyAngleForAiming)
+        {
+            PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, prevXAngle, pCoeffUpDown * correctResultUpDown, dCoeffUpDown);
+            PDLeftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, prevYAngle, pCoeffLeftRight * correctResultLeftRight, dCoeffLeftRight);
+        } 
+        else
+        {
+            PDUpDownResult =    Shared.PDController(xAngleBetweenForwardAndDirectionCircle, localAngularVelocity.x, pCoeffUpDown * correctResultUpDown, dCoeffUpDown);
+            PDLeftRightResult = Shared.PDController(yAngleBetweenForwardAndDirectionCircle, localAngularVelocity.y, pCoeffLeftRight * correctResultLeftRight, dCoeffLeftRight);
+        }
+
 
         // so that at high speeds it does not shake
         PDUpDownResult    *= 1 - (rb.velocity.magnitude / 2000);
