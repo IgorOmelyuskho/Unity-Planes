@@ -246,8 +246,8 @@ public class CameraOperate : MonoBehaviour
     void customCamLogic(Vector3 deltaPosition)
     {
         correctOnParallax = Vector3.zero;
-        float fwd = 39f;
-        float up = 5f;
+        float fwd = 25f;
+        float up = 8f;
         Vector3 camOffset;
 
         try
@@ -270,10 +270,15 @@ public class CameraOperate : MonoBehaviour
         }
         else if (attachToControlObject == true)
         {
+            Vector3 directionCircleInWorldPosition = controlObject.GetComponent<controlObject>().directionCircleInWorldPosition;
+            
             if (useOffset)
                 m_transform.position = controlObject.transform.position + offsetPosition;
             else
+            {
+                camOffset = (directionCircleInWorldPosition - controlObject.transform.position).normalized * fwd - Vector3.up * up;
                 m_transform.position = controlObject.transform.position - camOffset;
+            }
 
             Camera.main.fieldOfView = fov;
             GameObject target = controlObject.GetComponent<controlObject>().target;
@@ -287,7 +292,7 @@ public class CameraOperate : MonoBehaviour
             }
             else if (lookAtControlObjectForward && !Input.GetKey(KeyCode.Space))
             {
-                m_transform.LookAt(controlObject.transform.forward * 1000000);
+                m_transform.LookAt(directionCircleInWorldPosition);
             }
             else if (lookAtControlObjectCenter && !Input.GetKey(KeyCode.Space))
             {
@@ -334,7 +339,7 @@ public class CameraOperate : MonoBehaviour
     // look at controlObject center
     void rotateAroundControlObject(float distance)
     {
-        float rotationSpeed = 30.0f;
+        float rotationSpeed = 2.0f;
 
         if (Input.GetButtonDown("Space"))
         {
@@ -342,8 +347,8 @@ public class CameraOperate : MonoBehaviour
             yCamRotate = transform.eulerAngles.x;
         }
 
-        xCamRotate += Input.GetAxis("Mouse X") * rotationSpeed * 0.1f;
-        yCamRotate -= Input.GetAxis("Mouse Y") * rotationSpeed * 0.1f;
+        xCamRotate += Input.GetAxis("Mouse X") * rotationSpeed;
+        yCamRotate -= Input.GetAxis("Mouse Y") * rotationSpeed;
 
         Quaternion rotation = Quaternion.Euler(yCamRotate, xCamRotate, 0);
 

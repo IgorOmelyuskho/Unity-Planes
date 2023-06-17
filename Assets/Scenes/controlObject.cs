@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,14 +17,14 @@ public class controlObject : MonoBehaviour
     public AnimationCurve rollSmoothingDIfNeedTurnToTargetCurve;
 
     Camera cam;
-    float mouseSensitivity = 23;
+    float mouseSensitivity = 1;
     RectTransform forwardDirection;
     Vector3 prevVelocity;
     float attackAngle;
 
     float aimDistist = 100000;
     Vector3 aimInWorldSpacPosition;
-    Vector3 directionCircleInWorldWorldPosition;
+    public Vector3 directionCircleInWorldPosition;
 
     bool moveLeft;
     bool moveRight;
@@ -192,7 +193,7 @@ public class controlObject : MonoBehaviour
         rb.maxAngularVelocity = 20;
         rb.inertiaTensor = tensor1 * rb.mass;
 
-        directionCircleInWorldWorldPosition = transform.position + transform.forward * aimDistist;
+        directionCircleInWorldPosition = transform.position + transform.forward * aimDistist;
 
         Cursor.visible = false;
 
@@ -415,22 +416,25 @@ public class controlObject : MonoBehaviour
             Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
             if (mouseDelta.x != 0 || mouseDelta.y != 0)
             {
-                directionCircleInWorldWorldPosition = cam.ScreenToWorldPoint(new Vector3(rectTransformDirectionCircle.position.x + mouseDelta.x, rectTransformDirectionCircle.position.y + mouseDelta.y, aimDistist));
+                Quaternion rotation = Quaternion.Euler(-mouseDelta.y, mouseDelta.x, 0f);
+                Vector3 localDirectionCircle = cam.transform.InverseTransformPoint(directionCircleInWorldPosition);
+                localDirectionCircle = rotation * localDirectionCircle;
+                directionCircleInWorldPosition = cam.transform.TransformPoint(localDirectionCircle);
             }
-            Vector3 directionCirclePosition = cam.WorldToScreenPoint(directionCircleInWorldWorldPosition);
+            Vector3 directionCirclePosition = cam.WorldToScreenPoint(directionCircleInWorldPosition);
             directionCirclePosition.z = 0;
             rectTransformDirectionCircle.position = directionCirclePosition;
         }
         else
         {
-            directionCircleInWorldWorldPosition = aimInWorldSpacPosition;
+            directionCircleInWorldPosition = aimInWorldSpacPosition;
             rectTransformDirectionCircle.position = forwardDirectionPos;
         }
     }
 
     void drawArrows()
     {
-        drawArrowIfObjectOutsideScreens(directionCircleInWorldWorldPosition, rectTransformDirectionCircleArrow);
+        drawArrowIfObjectOutsideScreens(directionCircleInWorldPosition, rectTransformDirectionCircleArrow);
 
         if (target) 
             drawArrowIfObjectOutsideScreens(target.transform.position, rectTransformEnemyArrow);
@@ -838,7 +842,7 @@ public class controlObject : MonoBehaviour
         }
         else
         {
-            Vector3 directionCircleDir = directionCircleInWorldWorldPosition - transform.position;
+            Vector3 directionCircleDir = directionCircleInWorldPosition - transform.position;
             yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.up, true);
             xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(directionCircleDir, transform.forward, transform.right, true);
         }
