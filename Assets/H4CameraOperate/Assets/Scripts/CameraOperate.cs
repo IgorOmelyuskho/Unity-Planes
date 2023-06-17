@@ -2,20 +2,21 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.UIElements.GraphView;
 using UnityEngine;
 
 public class CameraOperate : MonoBehaviour
 {
     [Tooltip("Mouse wheel rolling control lens please enter, the speed of the back")]
-    [Range(0.5f, 2f)] public float scrollSpeed = 1f;
+    [Range(0.1f, 2f)] public float scrollSpeed = 1f;
     [Tooltip("Right mouse button control lens X axis rotation speed")]
-    [Range(0.5f, 2f)] public float rotateXSpeed = 1f;
+    [Range(0.1f, 2f)] public float rotateXSpeed = 1f;
     [Tooltip("Right mouse button control lens Y axis rotation speed")]
-    [Range(0.5f, 2f)] public float rotateYSpeed = 1f;
+    [Range(0.1f, 2f)] public float rotateYSpeed = 1f;
     [Tooltip("Mouse wheel press, lens translation speed")]
-    [Range(0.5f, 2f)] public float moveSpeed = 1f;
+    [Range(0.1f, 2f)] public float moveSpeed = 1f;
     [Tooltip("The keyboard controls how fast the camera moves")]
-    [Range(0.5f, 15f)] public float keyMoveSpeed = 4f;
+    [Range(0.1f, 15f)] public float keyMoveSpeed = 4f;
 
     //Whether the lens control operation is performed
     public bool operate = true;
@@ -40,6 +41,8 @@ public class CameraOperate : MonoBehaviour
 
     //Is the camera facing down
     private bool isDown = false;
+
+    private bool zoom = false;
 
 
     public GameObject target;
@@ -85,6 +88,7 @@ public class CameraOperate : MonoBehaviour
     {
         fov = maxFov;
         m_transform = transform;
+        Screen.fullScreen = true;
     }
 
     // Update is called once per frame
@@ -92,6 +96,19 @@ public class CameraOperate : MonoBehaviour
     {
         if (operate)
         {
+            if (Input.GetMouseButtonDown(1))
+            {
+                // Выполнять код, если правая кнопка мыши была только что нажата
+                zoom = !zoom;
+                if (zoom)
+                {
+                    fov = Mathf.Clamp(30, minFov, maxFov);
+                } else
+                {
+                    fov = maxFov;
+                }
+                Camera.main.fieldOfView = fov;
+            }
             //When in the rotation state, and the right mouse button is released, then exit the rotation state
             if (isRotate && Input.GetMouseButtonUp(1))
             {
@@ -317,7 +334,7 @@ public class CameraOperate : MonoBehaviour
     // look at controlObject center
     void rotateAroundControlObject(float distance)
     {
-        float rotationSpeed = 120.0f;
+        float rotationSpeed = 30.0f;
 
         if (Input.GetButtonDown("Space"))
         {

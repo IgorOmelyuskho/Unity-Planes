@@ -1674,7 +1674,7 @@ MonoBehaviour:
   rotateXSpeed: 1
   rotateYSpeed: 1
   moveSpeed: 1
-  keyMoveSpeed: 4.36
+  keyMoveSpeed: 4.06
   operate: 1
   isKeyOperate: 1
   target: {fileID: 948023814}
@@ -5622,7 +5622,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -5728,8 +5728,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639650589}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7, z: 407.2}
+  m_LocalRotation: {x: 0.7044008, y: -0.70930624, z: -0.018133882, w: 0.019375207}
+  m_LocalPosition: {x: 100, y: 1000, z: -1093.4}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 591313179}
@@ -5739,7 +5739,7 @@ Transform:
   - {fileID: 42850469}
   m_Father: {fileID: 0}
   m_RootOrder: 14
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0.09, y: -176.96, z: -89.6}
 --- !u!1 &1698825971
 GameObject:
   m_ObjectHideFlags: 0
@@ -6226,7 +6226,7 @@ MonoBehaviour:
   lineRenderer: {fileID: 1901476849}
   UICam: {fileID: 1351212433}
   initSpeed: 350
-  power: 32.5
+  power: 71.2
   engineThrust: 0
   hpBar: {fileID: 191080405}
   rectTransformDirectionCircle: {fileID: 2102348715}
@@ -6248,10 +6248,10 @@ MonoBehaviour:
   isPropPlane: 0
   tractionVectorControlEnabled: 0
   hp: 100
-  tractionVectorControlCoeff: 0.15
+  tractionVectorControlCoeff: 0.04
   maxControlPlaneAngle: 45
   maxControlPlaneRotationSpeed: 5
-  engineThrustCoeff: 5700
+  engineThrustCoeff: 1700
   engineThrustKG: 0
   controlPlaneDragCoeff: 0.3
   upDownCorpusDragCoeff: 10
@@ -6339,10 +6339,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  pCoeffLeftRight: 15
-  dCoeffLeftRight: 1.4
-  pCoeffUpDown: 10
-  dCoeffUpDown: 1
+  pCoeffLeftRight: 10
+  dCoeffLeftRight: 2.3
+  pCoeffUpDown: 9
+  dCoeffUpDown: 2.1
   tickCountForRocketOffEngine: 0
   PDResultDistanceAnimationCurve:
     serializedVersion: 2
@@ -6479,8 +6479,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901476846}
-  m_LocalRotation: {x: 0.00010447426, y: 0.024431871, z: -0.004274831, w: -0.9996924}
-  m_LocalPosition: {x: 106.2, y: 1000, z: -1260.3}
+  m_LocalRotation: {x: 0, y: -0.036382068, z: 0, w: 0.99933803}
+  m_LocalPosition: {x: 100, y: 1000, z: 100}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1698825972}
@@ -6490,7 +6490,7 @@ Transform:
   - {fileID: 279484715}
   m_Father: {fileID: 0}
   m_RootOrder: 13
-  m_LocalEulerAnglesHint: {x: 0, y: -2.8, z: -359.51}
+  m_LocalEulerAnglesHint: {x: 0, y: -4.17, z: 0}
 --- !u!1 &1918963075
 GameObject:
   m_ObjectHideFlags: 0
@@ -7583,7 +7583,7 @@ RectTransform:
   m_GameObject: {fileID: 2102348714}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1010516431}
   m_RootOrder: 13
@@ -7591,7 +7591,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -544}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2102348716
 MonoBehaviour:
