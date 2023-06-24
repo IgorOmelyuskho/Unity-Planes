@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class rocketLauncher : MonoBehaviour
@@ -9,7 +8,7 @@ public class rocketLauncher : MonoBehaviour
     public GameObject rocket3;
 
     public GameObject controlRocket;
-    public GameObject controlRocket2;
+    //public GameObject controlRocket2;
 
     public float speed;
 
@@ -18,7 +17,13 @@ public class rocketLauncher : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        //StartCoroutine(CallFunctionWithDelay(0.1f, controlRocket));
+    }
+    
+    private IEnumerator CallFunctionWithDelay(float delay, GameObject rocket)
+    {
+        yield return new WaitForSeconds(delay);
+        launchRocket(rocket);
     }
 
     // Update is called once per frame
@@ -34,7 +39,7 @@ public class rocketLauncher : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X) && Shared.player)
         {
             launchRocket(controlRocket);
-            launchRocket(controlRocket2);
+            //launchRocket(controlRocket2);
 
             Shared.player.GetComponent<controlObject>().hp = 100;
         }

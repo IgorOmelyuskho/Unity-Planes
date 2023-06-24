@@ -15,6 +15,7 @@ public class controlObject : MonoBehaviour
     float eleronValue = 0;
     public AnimationCurve rollSmoothingPIfNeedTurnToTargetCurve;
     public AnimationCurve rollSmoothingDIfNeedTurnToTargetCurve;
+    public AnimationCurve mouseDeltaCurve;
 
     Camera cam;
     float mouseSensitivity = 1;
@@ -60,6 +61,8 @@ public class controlObject : MonoBehaviour
 
     bool observeLastLaunchedRocket;
     bool observeLastLaunchedInControlObjRocket;
+
+    Vector3 aimPosition;
 
     // public
 
@@ -174,7 +177,7 @@ public class controlObject : MonoBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
 
         cam = Camera.main;
-        if (cam.GetComponent<CameraOperate>().controlObject == gameObject && rocketOwner == null && !Shared.player) { // rocketOwner == null - because bug if press U untill launch rocket
+        if (gameObject.name == "Eurofighter_Typhoon" && rocketOwner == null && !Shared.player) { // rocketOwner == null - because bug if press U untill launch rocket
             isPlayer = true;
             Shared.player = gameObject;
         }
@@ -219,7 +222,7 @@ public class controlObject : MonoBehaviour
         velocity = rb.velocity;
         velocityMaggnitude = rb.velocity.magnitude;
 
-        if ((moveLeft || moveRight || moveDown || moveUp)/* && !needTurnToTarget*/)
+        if ((moveLeft || moveRight || moveDown || moveUp) && isPlayer/* && !needTurnToTarget*/)
             rotateControlPlaneByKey();
         else
             rotateControlPlaneByMouse();
@@ -257,8 +260,8 @@ public class controlObject : MonoBehaviour
         if (isLaunchedRocket)
             drawAimPosForRocket();
 
-        if (!isLaunchedRocket/* && !needTurnToTarget*/)
-            handleKeyInput(); // for bot can turn if !needTurnToTarget
+        if (isPlayer)
+            handleKeyInput();
 
         if (isPlayer)
         {
@@ -414,6 +417,7 @@ public class controlObject : MonoBehaviour
         if (!Input.GetKey(KeyCode.Space))
         {
             Vector2 mouseDelta = new Vector2(Input.GetAxis("Mouse X") * mouseSensitivity, Input.GetAxis("Mouse Y") * mouseSensitivity);
+            mouseDelta *= mouseDeltaCurve.Evaluate(Camera.main.fieldOfView);
             if (mouseDelta.x != 0 || mouseDelta.y != 0)
             {
                 Quaternion rotation = Quaternion.Euler(-mouseDelta.y, mouseDelta.x, 0f);
@@ -775,8 +779,6 @@ public class controlObject : MonoBehaviour
         float yAngleBetweenForwardAndDirectionCircle;
         float xAngleBetweenForwardAndDirectionCircle;
 
-        Vector3 aimPosition = Vector3.zero;
-
         if (isLaunchedRocket && target)
         {
             Vector3 targetAcceleration = Vector3.zero;
@@ -809,8 +811,8 @@ public class controlObject : MonoBehaviour
             }
             yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
             xAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.right, true);
-            //leftRoll = false;
-            //rightRoll = false;
+            leftRoll = false;
+            rightRoll = false;
             float minAngleForUseRoll = 7;
             Vector3 projectionFwdToPlane = Vector3.ProjectOnPlane(transform.forward, direction);
             Vector3 projectionUpToPlane = Vector3.ProjectOnPlane(transform.up, direction);
@@ -827,13 +829,10 @@ public class controlObject : MonoBehaviour
             }
             if (angleBtw2VectorsIfTurnToTarget + minAngleForUseRoll < 180 && angle > minAngleForUseRoll)
             {
-                if (!leftRoll && !rightRoll)
-                {
-                    if (signedAngleBtw2Vectors > 0)
-                        leftRoll = true;
-                    else
-                        rightRoll = true;
-                }
+                if (signedAngleBtw2Vectors > 0)
+                    leftRoll = true;
+                else
+                    rightRoll = true;
             }
             if (angleBtw2VectorsIfTurnToTarget > 90 && angle > 90 && xAngleBetweenForwardAndDirectionCircle < 0)
             {
@@ -1139,8 +1138,7 @@ public class controlObject : MonoBehaviour
     {
         if (target)
         {
-            Vector3 aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero, Vector3.zero);
-            UnityEngine.Debug.DrawLine(transform.position, aimPosition, Color.yellow);
+            UnityEngine.Debug.DrawLine(transform.position, aimPosition, new Color(1f,0.5f,0.2f));
         }
     }
 
