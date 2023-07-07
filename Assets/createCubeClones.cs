@@ -15,7 +15,7 @@ public class createCubeClones : MonoBehaviour
         {
             for (var z = -countByOneSide; z <= countByOneSide; z++)
             {
-                GameObject cubeClone = Instantiate(cubeForClone, new Vector3(x * dist, 0, z * dist), transform.rotation);
+                GameObject cubeClone = Instantiate(cubeForClone, new Vector3(x * dist, 3, z * dist), transform.rotation);
                 cubeClone.transform.parent = gameObject.transform;
             }
         } 
