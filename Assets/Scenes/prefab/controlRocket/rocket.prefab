@@ -251,6 +251,12 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  mouseDeltaCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   directionCircleInWorldPosition: {x: 0, y: 0, z: 0}
   isLaunchedRocket: 0
   target: {fileID: 0}

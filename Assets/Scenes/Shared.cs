@@ -181,10 +181,58 @@ public class Shared
         return targetingPosition;
     }
 
-    //static public vector3 calculateaim2(vector3 targetposition, vector3 targetspeed, vector3 selfposition, float bulletorrocketspeed)
-    //{
+    static public Vector3 CalculateAim2(Vector3 targetPosition, Vector3 targetSpeed, Vector3 selfPosition, float bulletOrRocketSpeed, Vector3 selfSpeed, Vector3 targetAcceleration)
+    {
+        Vector3 calcAim = CalculateAim(targetPosition,  targetSpeed,  selfPosition,  bulletOrRocketSpeed,  selfSpeed,  targetAcceleration);
+        if (calcAim == targetPosition)
+        {
+            return targetPosition;
+        }
+        Vector3 startPos = targetPosition + (calcAim - targetPosition) * 3;
+        Vector3 endPos = targetPosition;
+        float targetSpeedMagnitude = targetSpeed.magnitude;
 
-    //}
+        float f1(Vector3 v)
+        {
+            return (v - targetPosition).magnitude / targetSpeedMagnitude;
+        }
+
+        float f2(Vector3 v)
+        {
+            return (v - selfPosition).magnitude / bulletOrRocketSpeed;
+        }
+        
+        Vector3 FindIntersectionPoint(Vector3 start, Vector3 end, float epsilon)
+        {
+            Vector3 mid = (start + end) / 2;
+            float f1mid = f1(mid);
+            float f2mid = f2(mid);
+            int counter = 0;
+        
+            while (Math.Abs(f1mid - f2mid) > epsilon)
+            {
+                if (f1mid > f2mid)
+                    start = mid;
+                else
+                    end = mid;
+                
+                counter++;
+                if (counter > 30)
+                {
+                    return targetPosition;
+                    //throw new Exception("error counter");
+                }
+
+                mid = (start + end) / 2;
+                f1mid = f1(mid);
+                f2mid = f2(mid);
+            }
+
+            return mid;
+        }
+
+        return FindIntersectionPoint(startPos, endPos, 0.01f);
+    }
 
     static public float LineaRInterpolate(float x0, float y0, float x1, float y1, float x)
     {

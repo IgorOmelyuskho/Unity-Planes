@@ -8,7 +8,7 @@ public class rocketLauncher : MonoBehaviour
     public GameObject rocket3;
 
     public GameObject controlRocket;
-    //public GameObject controlRocket2;
+    public GameObject controlRocket2;
 
     public float speed;
 
@@ -17,13 +17,17 @@ public class rocketLauncher : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //StartCoroutine(CallFunctionWithDelay(0.1f, controlRocket));
+        StartCoroutine(CallFunctionWithDelay(3f, controlRocket, controlRocket2));
     }
     
-    private IEnumerator CallFunctionWithDelay(float delay, GameObject rocket)
+    private IEnumerator CallFunctionWithDelay(float delay, GameObject controlRocket, GameObject controlRocket2)
     {
-        yield return new WaitForSeconds(delay);
-        launchRocket(rocket);
+        //while (true)
+        {
+            yield return new WaitForSeconds(delay);
+            launchRocket(controlRocket, Color.blue);
+            //launchRocket(controlRocket2, false);
+        }
     }
 
     // Update is called once per frame
@@ -38,7 +42,8 @@ public class rocketLauncher : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.X) && Shared.player)
         {
-            launchRocket(controlRocket);
+            launchRocket(controlRocket, Color.blue);
+            //launchRocket(controlRocket2, Color.green);
             //launchRocket(controlRocket2);
 
             Shared.player.GetComponent<controlObject>().hp = 100;
@@ -54,7 +59,7 @@ public class rocketLauncher : MonoBehaviour
         /*transform.Translate(0, 0, speed);*/
     }
 
-    void launchRocket(GameObject rocket)
+    void launchRocket(GameObject rocket, Color trailColor)
     {
         GameObject rocketClone = Instantiate(rocket, new Vector3(transform.position.x, transform.position.y, transform.position.z) - transform.up * 1.0f, transform.rotation);
         rocketClone.GetComponent<controlObject>().isLaunchedRocket = true;
@@ -63,6 +68,9 @@ public class rocketLauncher : MonoBehaviour
         //rocketClone.GetComponent<controlObject>().rocketOwner = gameObject;
         Shared.player.GetComponent<controlObject>().addObjToInfoNearObjList(rocketClone);
         Shared.hitWithBulletOrRocketObjects.Add(rocketClone);
+        
+        TrailRenderer trailRenderer = rocketClone.transform.Find("for-trail-renderer").GetComponent<TrailRenderer>();
+        trailRenderer.startColor = trailColor;
 
         Shared.lastLauncheInControlObjdRocket = rocketClone;
     }

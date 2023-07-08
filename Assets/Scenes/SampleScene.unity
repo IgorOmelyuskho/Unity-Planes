@@ -1323,6 +1323,8 @@ MonoBehaviour:
   rocket3: {fileID: 5469044686963139146, guid: 8017361f092a2f14eb79345ba3f80af6, type: 3}
   controlRocket: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5,
     type: 3}
+  controlRocket2: {fileID: 7816604504285821044, guid: b5b1559167081b3479aae41a386d8c02,
+    type: 3}
   speed: 0
   lookAtPlayer: 1
 --- !u!1 &420232700
@@ -5134,6 +5136,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: engineThrustCoeff
+      value: 755
+      objectReference: {fileID: 0}
+    - target: {fileID: 1148350815824479750, guid: e64293d5161f41645998c1354ea6a2d5,
+        type: 3}
+      propertyPath: tractionVectorControlEnabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1148350815824479751, guid: e64293d5161f41645998c1354ea6a2d5,
         type: 3}
       propertyPath: m_Name
@@ -5392,36 +5404,6 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f7a66444fb62eb646bc81986cdad3b14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Name: 
-  m_EditorClassIdentifier: 
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1559538143
@@ -6314,7 +6296,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901476846}
   m_LocalRotation: {x: 0, y: -0.9187912, z: 0, w: 0.39474395}
-  m_LocalPosition: {x: 0, y: 292.69, z: 60.23}
+  m_LocalPosition: {x: 1000, y: 600, z: 1800}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1698825972}
@@ -6946,7 +6928,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2043696549
 MonoBehaviour:
   m_ObjectHideFlags: 0

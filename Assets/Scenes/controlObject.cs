@@ -787,7 +787,7 @@ public class controlObject : MonoBehaviour
                 targetAcceleration = target.GetComponent<controlObject>().actualAcceleration;
             }
             catch { }
-            aimPosition = Shared.CalculateAim(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero, targetAcceleration);
+            aimPosition = Shared.CalculateAim2(target.transform.position, target.GetComponent<controlObject>().rb.velocity, transform.position, rb.velocity.magnitude, Vector3.zero, targetAcceleration);
             Vector3 direction = aimPosition - transform.position;
 
             //yAngleBetweenForwardAndDirectionCircle = Shared.AngleOffAroundAxis(direction, transform.forward, transform.up, true);
@@ -868,8 +868,8 @@ public class controlObject : MonoBehaviour
             PDUpDownResult    *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.x) * 1.2f) / 350);
             PDLeftRightResult *= 1 - ((Mathf.Abs(attackAngle) * 1.7f + Mathf.Abs(localAngularVelocity.y) * 1.2f) / 350);
 
-            PDUpDownResult    *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
-            PDLeftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.7f) + 0.1f;
+            PDUpDownResult    *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.4f) + 0.1f;
+            PDLeftRightResult *= 0.0000001f * Mathf.Pow(rb.velocity.magnitude, 2.4f) + 0.1f;
 
             PDResultDistanceAnimationCurveValue = PDResultDistanceAnimationCurve.Evaluate(Vector3.Distance(transform.position, aimPosition));
             if (counter > tickCountForRocketOffEngine)
